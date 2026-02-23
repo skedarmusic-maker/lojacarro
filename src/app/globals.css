@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --color-zinc-950: #09090b;
+}
+
+/* Base styles cleanup */
+body {
+  margin: 0;
+  padding: 0;
+  color: white;
+}
+
+/* Hide scrollbar for category carousel */
+.hide-scrollbars {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+.hide-scrollbars::-webkit-scrollbar {
+  display: none;
+}
+
+/* Animation to hint scrolling on mobile */
+@keyframes hint-swipe {
+  0% {
+    transform: translateX(0);
+  }
+
+  15% {
+    transform: translateX(-40px);
+  }
+
+  30% {
+    transform: translateX(10px);
+  }
+
+  50% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(0);
+  }
+
+  /* Pause interval inside keyframes */
+}
+
+.animate-hint-swipe {
+  /* 3s total duration = 1.5s movement + 1.5s pause, repeated 5 times */
+  animation: hint-swipe 3s ease-in-out 1s 5;
+}
