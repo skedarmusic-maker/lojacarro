@@ -1,0 +1,17 @@
+{
+  "/api/admin/veiculos/promo/route": "/api/admin/veiculos/promo",
+  "/api/leads/route": "/api/leads",
+  "/_not-found/page": "/_not-found",
+  "/admin/dashboard/page": "/admin/dashboard",
+  "/admin/estoque/[veiculoId]/page": "/admin/estoque/[veiculoId]",
+  "/admin/config/page": "/admin/config",
+  "/admin/estoque/page": "/admin/estoque",
+  "/admin/login/page": "/admin/login",
+  "/page": "/",
+  "/[tenantId]/v/[carId]/page": "/[tenantId]/v/[carId]",
+  "/super-admin/page": "/super-admin",
+  "/[tenantId]/contato/page": "/[tenantId]/contato",
+  "/[tenantId]/sobre/page": "/[tenantId]/sobre",
+  "/[tenantId]/localizacao/page": "/[tenantId]/localizacao",
+  "/[tenantId]/page": "/[tenantId]"
+}

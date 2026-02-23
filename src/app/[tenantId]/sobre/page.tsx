@@ -7,8 +7,9 @@ import { ShieldCheck, Award, ThumbsUp } from 'lucide-react'
 // Forza essa página a ser renderizada dinamicamente caso os dados mudem (Next.js App Router)
 export const revalidate = 60
 
-export async function generateMetadata({ params }: { params: { tenantId: string } }) {
-    const loja = await getLojaBySlug(params.tenantId)
+export async function generateMetadata({ params }: { params: Promise<{ tenantId: string }> }) {
+    const resolvedParams = await params
+    const loja = await getLojaBySlug(resolvedParams.tenantId)
     if (!loja) return { title: 'Sobre Nós' }
 
     return {
@@ -17,8 +18,9 @@ export async function generateMetadata({ params }: { params: { tenantId: string 
     }
 }
 
-export default async function SobreLojaPage({ params }: { params: { tenantId: string } }) {
-    const loja = await getLojaBySlug(params.tenantId)
+export default async function SobreLojaPage({ params }: { params: Promise<{ tenantId: string }> }) {
+    const resolvedParams = await params
+    const loja = await getLojaBySlug(resolvedParams.tenantId)
 
     if (!loja) {
         notFound()
@@ -173,19 +175,10 @@ export default async function SobreLojaPage({ params }: { params: { tenantId: st
             </main>
 
             <StorefrontFooter
-                nome={nome}
-                slug={loja.slug}
-                corPrimaria={config_visual?.cor_primaria}
-                whatsapp={dados_contato?.whatsapp}
-                telefone_fixo={dados_contato?.telefone_fixo}
-                email={dados_contato?.email}
-                instagram={dados_contato?.instagram}
-                facebook={dados_contato?.facebook}
-                endereco={dados_contato?.endereco}
-                cidade={dados_contato?.cidade}
-                estado={dados_contato?.estado}
-                cep={dados_contato?.cep}
-                horario_funcionamento={dados_contato?.horario_funcionamento}
+                lojaNome={nome}
+                logoUrl={config_visual?.logo_url}
+                corPrimaria={config_visual?.cor_primaria || '#2563eb'}
+                contato={dados_contato || {}}
             />
         </div>
     )
