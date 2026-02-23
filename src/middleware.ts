@@ -62,11 +62,11 @@ export async function middleware(req: NextRequest) {
     // - Se currentHost tiver subdominio ou dominio custom: Rota do lojista (ex: marinhosveiculos.base.com -> tenant_slug = 'marinhosveiculos')
     let tenantSlug = currentHost
 
-    // Lógica simples de app (Apenas visual local por enquanto): 
-    // Na produção faríamos bater no banco (Supabase) pra resolver o domínio custom
-
-    // Exemplo: se nao for o dominio raiz
-    const isRootDomain = currentHost === 'localhost:3000' || currentHost === 'plataforma.com'
+    // Se for o dominio provisorio da Hostinger ou localhost, consideramos como RAIZ
+    const isRootDomain =
+        hostname.includes('localhost') ||
+        hostname.includes('hostingersite.com') ||
+        hostname === 'plataforma.com'
 
     if (!isRootDomain) {
         // Evita loop infinito: se o pathname já começa com o tenantSlug, não reescreve de novo
