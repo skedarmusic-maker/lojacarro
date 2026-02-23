@@ -6,10 +6,14 @@
 }
 
 /* Base styles cleanup */
+html,
 body {
   margin: 0;
   padding: 0;
   color: white;
+  overflow-x: hidden;
+  /* Fixes horizontal scrollbar / black bar on mobile */
+  width: 100%;
 }
 
 /* Hide scrollbar for category carousel */
