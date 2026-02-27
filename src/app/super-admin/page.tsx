@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import { toggleLojaStatus } from './actions'
+import { headers } from 'next/headers'
 
 export default async function SuperAdminDashboard() {
     const supabase = await createClient()
+    const headersList = await headers()
+    const host = headersList.get('host') || 'localhost:3000'
 
     // 1. Buscar todas as lojas
     const { data: lojas } = await supabase
@@ -76,7 +79,12 @@ export default async function SuperAdminDashboard() {
                                         <div className="text-xs text-zinc-500 truncate w-32" title={loja.id}>ID: ...{loja.id.slice(-8)}</div>
                                     </td>
                                     <td className="p-4">
-                                        <a href={`http://${loja.slug}.localhost:3000`} target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:text-blue-300 transition-colors font-medium">
+                                        <a
+                                            href={host.includes('localhost') ? `http://${loja.slug}.localhost:3000` : `https://${loja.slug}.${host}`}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-blue-400 hover:text-blue-300 transition-colors font-medium"
+                                        >
                                             {loja.slug}
                                         </a>
                                     </td>

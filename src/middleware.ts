@@ -48,35 +48,55 @@ export async function middleware(req: NextRequest) {
         }
     }
 
-    // 2. Limpar e estruturar hostnames para Multi-tenant
-    // Dominio base, ex: 'plataforma.com' (usando o local temporariamente)
-    const currentHost = process.env.NODE_ENV === 'production' && process.env.VERCEL === '1'
-        ? hostname.replace(`.venda-carros.vercel.app`, '')
-        : hostname.replace(`.localhost:3000`, '')
+    // 2. Definir domínios conhecidos como RAIZ (Plataforma Master)
+    const rootDomains = [
+        'localhost:3000',
+        '127.0.0.1:3000',
+        'silver-starling-801980.hostingersite.com',
+        'hostingersite.com',
+        'plataforma.com'
+    ]
 
-    const isLocalhost = hostname.includes('localhost')
+    // Se o hostname for exatamente um dos rootDomains, é a plataforma principal
+    const isRootDomain = rootDomains.includes(hostname)
 
-    // 3. Definir o Tenant Slug
-    // Regra SaaS:
-    // - Se currentHost == 'localhost:3000' ou 'base.com': Rota principal (institucional ou login do Painel Master)
-    // - Se currentHost tiver subdominio ou dominio custom: Rota do lojista (ex: marinhosveiculos.base.com -> tenant_slug = 'marinhosveiculos')
-    let tenantSlug = currentHost
-
-    // Se for o dominio provisorio da Hostinger ou localhost, consideramos como RAIZ
-    const isRootDomain =
-        hostname.includes('localhost') ||
-        hostname.includes('hostingersite.com') ||
-        hostname === 'plataforma.com'
+    // 3. Estruturar o Tenant Slug para Multi-tenant (subdomínios)
+    let tenantSlug = ''
 
     if (!isRootDomain) {
+        // Tenta descobrir qual o domínio base que o usuário está usando
+        const baseDomain = rootDomains.find(rd => hostname.endsWith(`.${rd}`))
+
+        if (baseDomain) {
+            // Se for um subdomínio de um domínio raiz (ex: loja.localhost:3000)
+            tenantSlug = hostname.replace(`.${baseDomain}`, '')
+        } else {
+            // Se for um domínio customizado que não está na lista raiz (ex: lojadocarro.com.br)
+            tenantSlug = hostname
+        }
+    }
+
+    // 4. Fallback: Suporte para rota /v/:slug (ex: plataforma.com/v/marinhos)
+    // Útil quando o subdomínio não está configurado no DNS
+    if (isRootDomain && url.pathname.startsWith('/v/')) {
+        const segments = url.pathname.split('/')
+        const pathSlug = segments[2]
+
+        if (pathSlug) {
+            // Remove o prefixo /v/:slug do path real para passar pro reescritor
+            const remainingPath = '/' + segments.slice(3).join('/')
+            return NextResponse.rewrite(new URL(`/${pathSlug}${remainingPath}${url.search}`, req.url))
+        }
+    }
+
+    // 5. Redirecionamento/Reescrita via Subdomínio
+    if (!isRootDomain && tenantSlug) {
         // Evita loop infinito: se o pathname já começa com o tenantSlug, não reescreve de novo
         if (url.pathname.startsWith(`/${tenantSlug}`)) {
             return NextResponse.next()
         }
 
         // É uma vitrine! Redireciona de forma invisível para o folder genérico app/[tenantId]
-        // A pagina no tenantSlug vai pegar e bater no banco pra ler a loja e checar se está ATIVA.
-        // O layout do [tenantId] faz a checagem 'ativo' e exibe tela de Suspenso, então deixamos passar
         return NextResponse.rewrite(new URL(`/${tenantSlug}${url.pathname}${url.search}`, req.url))
     }
 

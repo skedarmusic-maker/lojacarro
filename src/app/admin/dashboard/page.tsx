@@ -1,9 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 export default async function AdminDashboard() {
     const supabase = await createClient()
+    const headersList = await headers()
+    const host = headersList.get('host') || 'localhost:3000'
 
     // Middleware já nos protegeu, mas garantimos os dados do User aqui
     const { data: { user } } = await supabase.auth.getUser()
@@ -129,11 +132,29 @@ export default async function AdminDashboard() {
                     )}
 
                     <div className="mt-12 p-6 bg-emerald-950/20 border border-emerald-900/30 rounded-xl">
-                        <h3 className="text-emerald-500 font-semibold mb-2">Seu Link Público (Vitrine)</h3>
-                        <p className="text-zinc-300 text-sm mb-4">Compartilhe este link com seus clientes no Instagram ou WhatsApp.</p>
-                        <code className="bg-black border border-emerald-900 px-4 py-2 rounded text-emerald-400 block break-all">
-                            http://{loja?.slug}.localhost:3000
-                        </code>
+                        <h3 className="text-emerald-500 font-semibold mb-2">Links da Vitrine</h3>
+                        <p className="text-zinc-300 text-sm mb-4">Compartilhe estes links com seus clientes no Instagram ou WhatsApp.</p>
+
+                        <div className="space-y-4">
+                            <div>
+                                <span className="text-xs text-zinc-500 block mb-1">Via Subdomínio (Elegante)</span>
+                                <code className="bg-black border border-emerald-900 px-4 py-2 rounded text-emerald-400 block break-all">
+                                    {host.includes('localhost')
+                                        ? `http://${loja?.slug}.localhost:3000`
+                                        : `https://${loja?.slug}.${host}`
+                                    }
+                                </code>
+                            </div>
+                            <div>
+                                <span className="text-xs text-zinc-500 block mb-1">Via Caminho (Universal / Sem erro de DNS)</span>
+                                <code className="bg-black border border-zinc-800 px-4 py-2 rounded text-blue-400 block break-all">
+                                    {host.includes('localhost')
+                                        ? `http://localhost:3000/v/${loja?.slug}`
+                                        : `https://${host}/v/${loja?.slug}`
+                                    }
+                                </code>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

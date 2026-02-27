@@ -1,4 +1,9 @@
-export default function PlataformaHome() {
+import { headers } from 'next/headers'
+
+export default async function PlataformaHome() {
+    const headersList = await headers()
+    const host = headersList.get('host') || 'localhost:3000'
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 text-white p-4">
             <h1 className="text-4xl font-bold mb-4">Plataforma Auto Showroom</h1>
@@ -18,9 +23,12 @@ export default function PlataformaHome() {
                     Para ver como o site de uma loja específica ficaria, altere a URL no seu navegador ou acesse:
                 </p>
                 <ul className="list-disc pl-5 text-zinc-300 space-y-2">
-                    <li><strong>http://marinhos.localhost:3000</strong></li>
-                    <li><strong>http://supercarros.localhost:3000</strong></li>
+                    <li><strong>http://marinhos.{host}</strong></li>
+                    <li><strong>http://supercarros.{host}</strong></li>
                 </ul>
+                <p className="text-xs text-zinc-500 mt-4">
+                    (Nota: Subdomínios em produção requerem configuração de DNS Wildcard na Hostinger/Vercel)
+                </p>
             </div>
         </div>
     );
