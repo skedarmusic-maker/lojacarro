@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import EditImagesClient from './EditImagesClient'
+import InstagramPublishButton from '../InstagramPublishButton'
 
 type PageProps = {
     params: Promise<{ veiculoId: string }>
@@ -101,12 +102,25 @@ export default async function EditarVeiculoPage({ params }: PageProps) {
             </aside>
 
             <main className="flex-1 overflow-auto">
-                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center justify-between px-8 sticky top-0 backdrop-blur-md">
-                    <h1 className="text-xl font-semibold">Editar Veículo</h1>
-                    <a href="/admin/estoque" className="text-zinc-400 hover:text-white transition-colors">Voltar</a>
+                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center justify-between px-4 md:px-8 sticky top-0 backdrop-blur-md z-40">
+                    <div className="flex items-center gap-3">
+                        <a href="/admin/estoque" className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors">
+                            <span className="text-lg leading-none shrink-0 mb-0.5">&lsaquo;</span>
+                        </a>
+                        <h1 className="text-xl font-semibold">Editar Veículo</h1>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="hidden md:block">
+                            <InstagramPublishButton veiculo={veiculo} />
+                        </div>
+                        <a href="/admin/estoque" className="hidden md:block text-zinc-400 hover:text-white transition-colors">Voltar</a>
+                    </div>
                 </header>
 
                 <div className="p-8 max-w-3xl">
+                    <div className="md:hidden mb-6">
+                        <InstagramPublishButton veiculo={veiculo} />
+                    </div>
                     <div className="bg-[#141414] border border-zinc-800 rounded-xl p-8 shadow-xl">
                         <form action={updateVeiculo} className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -169,11 +183,7 @@ export default async function EditarVeiculoPage({ params }: PageProps) {
                                 <textarea name="descricao" rows={4} defaultValue={veiculo.descricao} className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
                             </div>
 
-                            <div className="space-y-2">
-                                <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Adicionar Mais Fotos (Até 8 no total)</label>
-                                <input type="file" name="fotos" multiple accept="image/*" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 cursor-pointer text-sm" />
-                                <p className="text-xs text-zinc-500 mt-1">As fotos enviadas aqui serão adicionadas ao final da galeria atual.</p>
-                            </div>
+
 
                             <div className="pt-4 flex gap-4">
                                 <button type="submit" className="flex-1 bg-white text-black font-bold py-4 rounded-xl hover:bg-zinc-200 transition-all">
