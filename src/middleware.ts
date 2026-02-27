@@ -54,8 +54,7 @@ export async function middleware(req: NextRequest) {
         '127.0.0.1:3000',
         'silver-starling-801980.hostingersite.com',
         'hostingersite.com',
-        'plataforma.com',
-        'focusauto.focusarts.com.br'
+        'plataforma.com'
     ]
 
     // Se o hostname for exatamente um dos rootDomains, é a plataforma principal

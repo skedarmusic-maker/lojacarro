@@ -9,7 +9,7 @@ async function deploy() {
         console.log("Conectando ao FTP Hostinger...");
         await client.access({
             host: "147.93.14.87",
-            user: "u786839041.focusauto",
+            user: "u786839041.site.softenglish.com.br",
             password: "1q2w3e4r@@@SK",
             secure: false
         });

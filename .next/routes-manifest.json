@@ -1,1 +1,133 @@
-{"version":3,"caseSensitive":false,"basePath":"","rewrites":{"beforeFiles":[],"afterFiles":[],"fallback":[]},"redirects":[{"source":"/:path+/","destination":"/:path+","permanent":true,"internal":true,"regex":"^(?:\\/((?:[^\\/]+?)(?:\\/(?:[^\\/]+?))*))\\/$"}],"headers":[]}
+{
+  "version": 3,
+  "pages404": true,
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/admin/estoque/[veiculoId]",
+      "regex": "^/admin/estoque/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPveiculoId": "nxtPveiculoId"
+      },
+      "namedRegex": "^/admin/estoque/(?<nxtPveiculoId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[tenantId]",
+      "regex": "^/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtenantId": "nxtPtenantId"
+      },
+      "namedRegex": "^/(?<nxtPtenantId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[tenantId]/contato",
+      "regex": "^/([^/]+?)/contato(?:/)?$",
+      "routeKeys": {
+        "nxtPtenantId": "nxtPtenantId"
+      },
+      "namedRegex": "^/(?<nxtPtenantId>[^/]+?)/contato(?:/)?$"
+    },
+    {
+      "page": "/[tenantId]/localizacao",
+      "regex": "^/([^/]+?)/localizacao(?:/)?$",
+      "routeKeys": {
+        "nxtPtenantId": "nxtPtenantId"
+      },
+      "namedRegex": "^/(?<nxtPtenantId>[^/]+?)/localizacao(?:/)?$"
+    },
+    {
+      "page": "/[tenantId]/sobre",
+      "regex": "^/([^/]+?)/sobre(?:/)?$",
+      "routeKeys": {
+        "nxtPtenantId": "nxtPtenantId"
+      },
+      "namedRegex": "^/(?<nxtPtenantId>[^/]+?)/sobre(?:/)?$"
+    },
+    {
+      "page": "/[tenantId]/v/[carId]",
+      "regex": "^/([^/]+?)/v/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtenantId": "nxtPtenantId",
+        "nxtPcarId": "nxtPcarId"
+      },
+      "namedRegex": "^/(?<nxtPtenantId>[^/]+?)/v/(?<nxtPcarId>[^/]+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/admin/config",
+      "regex": "^/admin/config(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/config(?:/)?$"
+    },
+    {
+      "page": "/admin/dashboard",
+      "regex": "^/admin/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/dashboard(?:/)?$"
+    },
+    {
+      "page": "/admin/estoque",
+      "regex": "^/admin/estoque(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/estoque(?:/)?$"
+    },
+    {
+      "page": "/admin/login",
+      "regex": "^/admin/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/login(?:/)?$"
+    },
+    {
+      "page": "/super-admin",
+      "regex": "^/super\\-admin(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/super\\-admin(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSuffix": ".prefetch.rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments"
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}
