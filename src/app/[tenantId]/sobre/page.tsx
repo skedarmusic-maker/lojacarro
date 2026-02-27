@@ -52,13 +52,13 @@ export default async function SobreLojaPage({ params }: { params: Promise<{ tena
                         {config_visual?.logo_url && (
                             <img src={config_visual.logo_url} alt={`Logo ${nome}`} className="h-10 w-auto" />
                         )}
-                        <Link href="/" style={{ color: "var(--color-brand)" }}>{nome}</Link>
+                        <Link href={`/${resolvedParams.tenantId}`} style={{ color: "var(--color-brand)" }}>{nome}</Link>
                     </div>
                     <nav className="hidden md:flex gap-6 font-medium text-gray-600">
-                        <Link href="/" className="hover:text-gray-900 transition-colors">Estoque</Link>
-                        <Link href="/sobre" className="text-gray-900 font-bold">Sobre Nós</Link>
-                        <Link href="/localizacao" className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href="/contato" className="hover:text-gray-900 transition-colors">Contato</Link>
+                        <Link href={`/${resolvedParams.tenantId}`} className="hover:text-gray-900 transition-colors">Estoque</Link>
+                        <Link href={`/${resolvedParams.tenantId}/sobre`} className="text-gray-900 font-bold">Sobre Nós</Link>
+                        <Link href={`/${resolvedParams.tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
+                        <Link href={`/${resolvedParams.tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
                     </nav>
                 </div>
             </header>
@@ -175,6 +175,7 @@ export default async function SobreLojaPage({ params }: { params: Promise<{ tena
             </main>
 
             <StorefrontFooter
+                slug={loja.slug}
                 lojaNome={nome}
                 logoUrl={config_visual?.logo_url}
                 corPrimaria={config_visual?.cor_primaria || '#2563eb'}

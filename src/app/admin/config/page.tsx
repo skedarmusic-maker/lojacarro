@@ -1,8 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { headers } from 'next/headers'
 
 export default async function ConfigPage() {
     const supabase = await createClient()
+    const headersList = await headers()
+    const host = headersList.get('host') || 'localhost:3000'
+    const baseHost = host.split('.').slice(-2).join('.') // Pega o dominio base (ex: hostingersite.com)
+
     const { data: { user } } = await supabase.auth.getUser()
 
     let { data: loja } = await supabase
@@ -81,7 +86,9 @@ export default async function ConfigPage() {
                 sobre_loja: formData.get('sobre_loja') as string || null,
                 imagem_sobre: imagem_sobre_url,
                 config_visual: cores,
-                dados_contato: dadosContato
+                dados_contato: dadosContato,
+                instagram_access_token: formData.get('instagram_access_token') as string || null,
+                instagram_account_id: formData.get('instagram_account_id') as string || null,
             })
             .eq('user_id', user?.id)
 
@@ -112,8 +119,13 @@ export default async function ConfigPage() {
             </aside>
 
             <main className="flex-1 overflow-auto">
-                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center px-8 sticky top-0 backdrop-blur-md">
-                    <h1 className="text-xl font-semibold">Configurações da Loja</h1>
+                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center justify-between px-4 md:px-8 sticky top-0 backdrop-blur-md z-40">
+                    <div className="flex items-center gap-3">
+                        <a href="/admin/dashboard" className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors">
+                            <span className="text-lg leading-none shrink-0 mb-0.5">&lsaquo;</span>
+                        </a>
+                        <h1 className="text-xl font-semibold">Configurações da Conta</h1>
+                    </div>
                 </header>
 
                 <div className="p-8 max-w-3xl">
@@ -132,7 +144,7 @@ export default async function ConfigPage() {
                                     <label className="text-sm font-medium text-zinc-300">Subdomínio na Plataforma</label>
                                     <div className="flex relative">
                                         <input required defaultValue={loja?.slug} name="slug" placeholder="marinhos" className="w-full rounded-l-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white z-10" />
-                                        <span className="bg-zinc-800 border border-zinc-700 border-l-0 rounded-r-md px-4 py-2.5 text-zinc-400 flex items-center">.plataforma.com</span>
+                                        <span className="bg-zinc-800 border border-zinc-700 border-l-0 rounded-r-md px-4 py-2.5 text-zinc-400 flex items-center whitespace-nowrap">.{baseHost}</span>
                                     </div>
                                     <p className="text-xs text-zinc-500">O endereço padrão gratuito do seu site.</p>
                                 </div>
@@ -263,6 +275,23 @@ export default async function ConfigPage() {
                                     </label>
                                     <input defaultValue={loja?.webhook_url_leads || ''} name="webhook_url_leads" type="url" placeholder="https://script.google.com/macros/s/..." className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-xs font-mono" />
                                     <p className="text-xs text-zinc-500 mt-1">Cole a URL do seu Webhook. Sempre que um cliente solicitar simulação de financiamento, enviaremos os dados automaticamente para este endereço.</p>
+                                </div>
+
+                                <div className="space-y-4 mb-6">
+                                    <label className="text-sm font-medium text-zinc-300 flex items-center gap-2">
+                                        Integração Meta Graph API (Instagram) <span className="bg-emerald-900/50 text-emerald-400 text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wide">NOVO</span>
+                                    </label>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <p className="text-xs text-zinc-400">Instagram Access Token (Long-Lived)</p>
+                                            <input defaultValue={loja?.instagram_access_token || ''} name="instagram_access_token" type="password" placeholder="EAAI..." className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-xs font-mono" />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <p className="text-xs text-zinc-400">Instagram Account ID</p>
+                                            <input defaultValue={loja?.instagram_account_id || ''} name="instagram_account_id" type="text" placeholder="178414..." className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-xs font-mono" />
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-zinc-500 mt-1">Insira as chaves geradas no Meta for Developers para habilitar a postagem automática de veículos no Instagram da loja.</p>
                                 </div>
                             </div>
 

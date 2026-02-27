@@ -1,10 +1,13 @@
 'use client'
 
-import { useState } from 'react'
-import { Star, Trash2 } from 'lucide-react'
+import { useState, useRef } from 'react'
+import { Star, Trash2, Loader2 } from 'lucide-react'
+import { compressImageToWebmotorsStandard } from '@/lib/imageCompressor'
 
 export default function EditImagesClient({ imagensIniciais }: { imagensIniciais: string[] }) {
     const [imagens, setImagens] = useState<string[]>(imagensIniciais || [])
+    const [isCompressing, setIsCompressing] = useState(false)
+    const fileInputRef = useRef<HTMLInputElement>(null)
 
     const handleSetCover = (index: number) => {
         if (index === 0) return;
@@ -15,15 +18,47 @@ export default function EditImagesClient({ imagensIniciais }: { imagensIniciais:
     }
 
     const handleDelete = (index: number) => {
-        // Confirmação simples
         if (confirm("Deseja realmente remover esta foto?")) {
             const newImagens = imagens.filter((_, i) => i !== index);
             setImagens(newImagens);
         }
     }
 
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!e.target.files || e.target.files.length === 0) return;
+
+        setIsCompressing(true)
+        try {
+            const originFiles = Array.from(e.target.files)
+            const dt = new DataTransfer()
+
+            for (const file of originFiles) {
+                if (file.type.startsWith('image/')) {
+                    // Comprime e redimensiona a imagem no Client-Side
+                    const compressed = await compressImageToWebmotorsStandard(file)
+                    dt.items.add(compressed)
+                } else {
+                    dt.items.add(file)
+                }
+            }
+
+            // Injeta os files levíssimos de volta no input nativo para o FormData do Server Action
+            if (fileInputRef.current) {
+                fileInputRef.current.files = dt.files
+            }
+        } catch (error) {
+            console.error("Erro ao comprimir imagens:", error)
+            alert("Ocorreu um erro ao otimizar as imagens. Tente novamente.")
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '' // Reseta em caso de erro
+            }
+        } finally {
+            setIsCompressing(false)
+        }
+    }
+
     return (
-        <div className="space-y-4">
+        <div className="space-y-6">
             {/* Input escondido para enviar o estado atualizado das fotos para o fluxo Server Action pai */}
             <input type="hidden" name="existing_imagens" value={JSON.stringify(imagens)} />
 
@@ -68,6 +103,24 @@ export default function EditImagesClient({ imagensIniciais }: { imagensIniciais:
                     </div>
                 </div>
             )}
+
+            <div className="space-y-2 border-t border-zinc-800 pt-6">
+                <label className="text-xs font-bold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
+                    Adicionar Novas Fotos
+                    {isCompressing && <span className="text-emerald-400 flex items-center gap-1 normal-case"><Loader2 size={12} className="animate-spin" /> Otimizando...</span>}
+                </label>
+                <input
+                    type="file"
+                    name="fotos"
+                    multiple
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    ref={fileInputRef}
+                    disabled={isCompressing}
+                    className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 cursor-pointer text-sm disabled:opacity-50"
+                />
+                <p className="text-xs text-zinc-500 mt-1">As fotos passarão por redimensionamento e compressão automática para garantir carregamento super rápido.</p>
+            </div>
         </div>
     )
 }

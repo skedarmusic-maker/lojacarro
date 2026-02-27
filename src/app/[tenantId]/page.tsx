@@ -7,6 +7,7 @@ import StorefrontFilters from './StorefrontFilters'
 import HeroCarousel from './HeroCarousel'
 import VehicleImageSlider from './VehicleImageSlider'
 import StorefrontFooter from './StorefrontFooter'
+import StorefrontCategories from './StorefrontCategories'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -106,15 +107,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
 
     const corPrimaria = loja.config_visual?.cor_primaria || '#3b82f6'
 
-    // Mock das imagens de categoria (em um projeto real poderíamos salvar no storage)
-    const categoryImages: Record<string, string> = {
-        'Carros elétricos': 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=500&auto=format&fit=crop&q=60',
-        'Hatches': 'https://images.unsplash.com/photo-1512749454157-550ffdae605d?w=500&auto=format&fit=crop&q=60',
-        'Picapes': 'https://images.unsplash.com/photo-1559404288-66f81078d101?w=500&auto=format&fit=crop&q=60',
-        'Sedans': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=500&auto=format&fit=crop&q=60',
-        'SUVs': 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500&auto=format&fit=crop&q=60',
-        'Outros': 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&auto=format&fit=crop&q=60'
-    }
+
 
     // Array estático de logos suportados em /public/images/
     const supportedBrandLogos = [
@@ -143,10 +136,10 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                         <span style={{ color: "var(--color-brand)" }}>{loja.nome}</span>
                     </div>
                     <nav className="hidden md:flex gap-6 font-medium text-gray-600">
-                        <Link href="/" className="text-gray-900 font-bold">Estoque</Link>
-                        <Link href="/sobre" className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
-                        <Link href="/localizacao" className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href="/contato" className="hover:text-gray-900 transition-colors">Contato</Link>
+                        <Link href={`/${tenantId}`} className="text-gray-900 font-bold">Estoque</Link>
+                        <Link href={`/${tenantId}/sobre`} className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
+                        <Link href={`/${tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
+                        <Link href={`/${tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
                     </nav>
                 </div>
             </header>
@@ -192,35 +185,12 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
             )}
 
             {/* Visual Categories Section */}
-            <section className="py-12 border-b border-gray-200 bg-gray-50">
-                <div className="max-w-7xl mx-auto px-4 overflow-hidden">
-                    <h3 className="text-gray-600 font-bold mb-6">Categorias</h3>
-                    <div className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x snap-mandatory hide-scrollbars touch-pan-x animate-hint-swipe">
-                        {Array.from(availableCategories).sort().map(categoria => (
-                            <Link
-                                key={categoria}
-                                href={`?cat=${encodeURIComponent(categoria)}`}
-                                scroll={false}
-                                className={`snap-center flex-none w-[200px] h-[200px] rounded-xl overflow-hidden relative group transition-all border-2 bg-white ${cat === categoria ? 'border-[var(--color-brand)] scale-105 shadow-xl z-10' : 'border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md'}`}
-                            >
-                                <img
-                                    src={categoryImages[categoria] || categoryImages['Outros']}
-                                    alt={categoria}
-                                    className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent flex items-end p-4">
-                                    <div>
-                                        <h4 className="text-xl font-bold text-white mb-1 group-hover:-translate-y-1 transition-transform">{categoria}</h4>
-                                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-white">
-                                            {categoriaCount[categoria]} veículos
-                                        </span>
-                                    </div>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-                </div>
-            </section>
+            <StorefrontCategories
+                tenantId={tenantId}
+                availableCategories={Array.from(availableCategories).sort()}
+                categoriaCount={categoriaCount}
+                activeCategory={cat}
+            />
 
             {/* Filtros Livres e Interativos (Vitrine Frontend) - Sticky Header Dinâmico */}
             <section id="estoque" className="py-3 md:py-4 border-b border-gray-200 bg-white sticky top-20 z-40 shadow-sm transition-all duration-300">
@@ -324,6 +294,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
             </section>
 
             <StorefrontFooter
+                slug={loja.slug}
                 lojaNome={loja.nome}
                 logoUrl={loja.config_visual?.logo_url || ''}
                 corPrimaria={corPrimaria}

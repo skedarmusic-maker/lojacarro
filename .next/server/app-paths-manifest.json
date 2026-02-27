@@ -1,17 +1,8 @@
 {
-  "/api/admin/veiculos/promo/route": "app/api/admin/veiculos/promo/route.js",
-  "/api/leads/route": "app/api/leads/route.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/estoque/[veiculoId]/page": "app/admin/estoque/[veiculoId]/page.js",
-  "/admin/config/page": "app/admin/config/page.js",
-  "/admin/estoque/page": "app/admin/estoque/page.js",
-  "/admin/login/page": "app/admin/login/page.js",
   "/page": "app/page.js",
-  "/[tenantId]/v/[carId]/page": "app/[tenantId]/v/[carId]/page.js",
-  "/super-admin/page": "app/super-admin/page.js",
-  "/[tenantId]/contato/page": "app/[tenantId]/contato/page.js",
-  "/[tenantId]/sobre/page": "app/[tenantId]/sobre/page.js",
-  "/[tenantId]/localizacao/page": "app/[tenantId]/localizacao/page.js",
+  "/admin/config/page": "app/admin/config/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/estoque/page": "app/admin/estoque/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
   "/[tenantId]/page": "app/[tenantId]/page.js"
 }

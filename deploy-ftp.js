@@ -1,37 +1,59 @@
 const ftp = require("basic-ftp");
+const fs = require("fs");
 const path = require("path");
 
 async function deploy() {
     const client = new ftp.Client();
-    client.ftp.verbose = true;
+    client.ftp.verbose = false;
     try {
         console.log("Conectando ao FTP Hostinger...");
         await client.access({
             host: "147.93.14.87",
-            user: "u786839041.site.softenglish.com.br",
+            user: "u786839041.focusauto",
             password: "1q2w3e4r@@@SK",
             secure: false
         });
-        console.log("Conectado! Fazendo upload dos arquivos...");
+        console.log("Conectado!");
 
-        // Envia todos os arquivos essenciais para rodar o Next.js
-        await client.ensureDir("/");
+        // Faz o upload seguro de uma pasta ignorando cache
+        async function uploadCustomDir(localDir, remoteDir, ignore = []) {
+            console.log(`Lendo ${localDir} ...`);
+            const entries = fs.readdirSync(localDir, { withFileTypes: true });
+            await client.ensureDir(remoteDir);
+            await client.cd("/"); // resetar o dir atual no ftp
 
-        console.log("Enviando package.json e config...");
-        await client.uploadFrom(path.join(__dirname, "package.json"), "package.json");
-        await client.uploadFrom(path.join(__dirname, "next.config.ts"), "next.config.ts");
-        if (require('fs').existsSync(path.join(__dirname, ".env.local"))) {
-            await client.uploadFrom(path.join(__dirname, ".env.local"), ".env.local");
+            for (let entry of entries) {
+                if (ignore.includes(entry.name)) continue;
+
+                const localPath = path.join(localDir, entry.name);
+                const rmPath = remoteDir === "/" ? `/${entry.name}` : `${remoteDir}/${entry.name}`;
+
+                if (entry.isDirectory()) {
+                    await uploadCustomDir(localPath, rmPath, ignore);
+                } else {
+                    console.log(`Upload: ${rmPath}`);
+                    await client.uploadFrom(localPath, rmPath);
+                }
+            }
         }
 
-        console.log("Enviando pastas public/, src/ e .next/...");
-        console.log("Nota: o upload de milhares de arquivos (node_modules, .next) pode demorar via FTP.");
+        console.log("Enviando Configs...");
+        await client.uploadFrom("package.json", "/package.json");
+        await client.uploadFrom("next.config.ts", "/next.config.ts");
+        if (fs.existsSync(".env.local")) {
+            await client.uploadFrom(".env.local", "/.env.local");
+        }
 
-        await client.uploadFromDir(path.join(__dirname, "public"), "public");
-        await client.uploadFromDir(path.join(__dirname, "src"), "src");
-        await client.uploadFromDir(path.join(__dirname, ".next"), ".next");
+        console.log("Enviando public/...");
+        await uploadCustomDir(path.join(__dirname, "public"), "/public");
 
-        console.log("Upload concluído com sucesso!");
+        console.log("Enviando .next/ (Ignorando cache)...");
+        await uploadCustomDir(path.join(__dirname, ".next"), "/.next", ["cache", "trace"]);
+
+        console.log("Enviando src/...");
+        await uploadCustomDir(path.join(__dirname, "src"), "/src");
+
+        console.log("UPLOAD DO PROJETO CONCLUIDO COM SUCESSO!");
     }
     catch (err) {
         console.error("Erro no FTP:", err);

@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Instagram, MapPin, Mail, Phone, MessageCircle, Clock } from 'lucide-react'
 
 type StorefrontFooterProps = {
+    slug: string
     lojaNome: string
     logoUrl?: string
     corPrimaria: string
@@ -19,7 +20,7 @@ type StorefrontFooterProps = {
     }
 }
 
-export default function StorefrontFooter({ lojaNome, logoUrl, corPrimaria, contato }: StorefrontFooterProps) {
+export default function StorefrontFooter({ slug, lojaNome, logoUrl, corPrimaria, contato }: StorefrontFooterProps) {
     return (
         <footer className="bg-white border-t border-gray-200 pt-16 pb-8 text-sm">
             <div className="max-w-7xl mx-auto px-4">
@@ -27,7 +28,7 @@ export default function StorefrontFooter({ lojaNome, logoUrl, corPrimaria, conta
 
                     {/* Brand / Sobre */}
                     <div className="flex flex-col gap-4">
-                        <Link href="/" className="inline-block">
+                        <Link href={`/${slug}`} className="inline-block">
                             {logoUrl ? (
                                 <img src={logoUrl} alt={`Logo ${lojaNome}`} className="h-12 w-auto" />
                             ) : (
@@ -82,10 +83,10 @@ export default function StorefrontFooter({ lojaNome, logoUrl, corPrimaria, conta
                     <div>
                         <h4 className="font-bold text-gray-900 mb-6 uppercase tracking-wider text-xs">Acesso Rápido</h4>
                         <ul className="flex flex-col gap-3">
-                            <li><Link href="/" className="text-gray-500 hover:text-gray-900 transition-colors">Ver Estoque</Link></li>
-                            <li><Link href="/sobre" className="text-gray-500 hover:text-gray-900 transition-colors">Sobre a Loja</Link></li>
-                            <li><Link href="/localizacao" className="text-gray-500 hover:text-gray-900 transition-colors">Nossa Localização</Link></li>
-                            <li><Link href="/contato" className="text-gray-500 hover:text-gray-900 transition-colors">Fale Conosco</Link></li>
+                            <li><Link href={`/${slug}`} className="text-gray-500 hover:text-gray-900 transition-colors">Ver Estoque</Link></li>
+                            <li><Link href={`/${slug}/sobre`} className="text-gray-500 hover:text-gray-900 transition-colors">Sobre a Loja</Link></li>
+                            <li><Link href={`/${slug}/localizacao`} className="text-gray-500 hover:text-gray-900 transition-colors">Nossa Localização</Link></li>
+                            <li><Link href={`/${slug}/contato`} className="text-gray-500 hover:text-gray-900 transition-colors">Fale Conosco</Link></li>
                         </ul>
                     </div>
 

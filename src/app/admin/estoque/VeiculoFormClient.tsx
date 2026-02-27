@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { fetchPlacaFipe, submitNovoVeiculo } from './actions'
+import { compressImageToWebmotorsStandard } from '@/lib/imageCompressor'
 
 export default function VeiculoFormClient() {
     const [loadingPlaca, setLoadingPlaca] = useState(false)
@@ -60,6 +61,27 @@ export default function VeiculoFormClient() {
 
         const formData = new FormData(e.currentTarget)
 
+        try {
+            // Interceptar e comprimir imagens orignais no client-side
+            const originPhotos = formData.getAll('fotos') as File[]
+            formData.delete('fotos') // Limpa as fotos originais (pesadas) do payload
+
+            for (const photo of originPhotos) {
+                if (photo.size > 0 && photo.type.startsWith('image/')) {
+                    const compressedFile = await compressImageToWebmotorsStandard(photo)
+                    formData.append('fotos', compressedFile)
+                } else if (photo.size > 0) {
+                    // Pass-through se por acaso for outro arquivo que o backend deve rejeitar
+                    formData.append('fotos', photo)
+                }
+            }
+        } catch (error: any) {
+            console.error("Erro na compressão de imagem:", error)
+            setFormError("Falha ao processar as imagens antes do envio.")
+            setLoadingForm(false)
+            return
+        }
+
         const result = await submitNovoVeiculo(formData)
 
         if (result?.error) {
@@ -89,18 +111,19 @@ export default function VeiculoFormClient() {
             {/* Seção Placa FIPE */}
             <div className="mb-6 pb-6 border-b border-zinc-800">
                 <label className="text-xs font-medium text-zinc-400 block mb-2">Busca Inteligente por Placa</label>
-                <div className="flex gap-2">
+                <div className="flex flex-col sm:flex-row gap-3">
                     <input
                         value={placaInput}
                         onChange={(e) => setPlacaInput(e.target.value.toUpperCase().replace(/[^a-zA-Z0-9]/g, ''))}
                         maxLength={7}
                         placeholder="Placa (ex: ABC1234)"
-                        className="rounded-md border border-zinc-700 bg-zinc-800 px-4 py-2 text-white placeholder-zinc-500 flex-1 max-w-[200px]"
+                        className="w-full sm:max-w-[200px] rounded-md border border-zinc-700 bg-zinc-800 px-4 py-3 sm:py-2 text-white placeholder-zinc-500"
                     />
                     <button
                         onClick={handleBuscarPlaca}
                         disabled={loadingPlaca}
-                        className="bg-emerald-600/20 text-emerald-500 border border-emerald-900/50 hover:bg-emerald-600/30 px-4 py-2 rounded-md font-bold transition-all disabled:opacity-50"
+                        type="button"
+                        className="w-full sm:w-auto bg-emerald-600/20 text-emerald-500 border border-emerald-900/50 hover:bg-emerald-600/30 px-4 py-3 sm:py-2 rounded-md font-bold transition-all disabled:opacity-50"
                     >
                         {loadingPlaca ? 'Buscando...' : 'Preencher Magicamente'}
                     </button>

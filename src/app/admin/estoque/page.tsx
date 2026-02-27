@@ -111,8 +111,13 @@ export default async function EstoquePage({ searchParams }: Props) {
             </aside>
 
             <main className="flex-1 overflow-auto">
-                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center justify-between px-8 sticky top-0 backdrop-blur-md">
-                    <h1 className="text-xl font-semibold">Meu Estoque</h1>
+                <header className="h-16 border-b border-zinc-800 bg-zinc-950/50 flex items-center justify-between px-4 md:px-8 sticky top-0 backdrop-blur-md z-40">
+                    <div className="flex items-center gap-3">
+                        <a href="/admin/dashboard" className="md:hidden flex items-center justify-center w-8 h-8 rounded-full bg-zinc-800 text-zinc-400 hover:text-white transition-colors">
+                            <span className="text-lg leading-none shrink-0 mb-0.5">&lsaquo;</span>
+                        </a>
+                        <h1 className="text-xl font-semibold">Meu Estoque</h1>
+                    </div>
                     <button
                         className="bg-white text-black px-4 py-2 rounded font-medium hover:bg-zinc-200"
                     // Em um app real abririamos um Dialog/Modal, aqui faremos um scroll ou display da sessao
