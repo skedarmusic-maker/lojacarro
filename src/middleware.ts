@@ -77,15 +77,16 @@ export async function middleware(req: NextRequest) {
     }
 
     // 4. Fallback: Suporte para rota /v/:slug (ex: plataforma.com/v/marinhos)
-    // Útil quando o subdomínio não está configurado no DNS
     if (isRootDomain && url.pathname.startsWith('/v/')) {
-        const segments = url.pathname.split('/')
-        const pathSlug = segments[2]
+        const segments = url.pathname.split('/').filter(Boolean) // ['', 'v', 'slug', 'rest'] -> ['v', 'slug', 'rest']
+        const pathSlug = segments[1]
 
         if (pathSlug) {
-            // Remove o prefixo /v/:slug do path real para passar pro reescritor
-            const remainingPath = '/' + segments.slice(3).join('/')
-            return NextResponse.rewrite(new URL(`/${pathSlug}${remainingPath}${url.search}`, req.url))
+            const remainingPath = segments.slice(2).join('/')
+            const rewritePath = `/${pathSlug}${remainingPath ? `/${remainingPath}` : ''}`
+
+            console.log(`[Middleware] Rewrite /v/: ${url.pathname} -> ${rewritePath}`)
+            return NextResponse.rewrite(new URL(`${rewritePath}${url.search}`, req.url))
         }
     }
 
