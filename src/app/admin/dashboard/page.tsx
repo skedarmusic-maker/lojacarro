@@ -138,9 +138,11 @@ export default async function AdminDashboard() {
                                 <p className="text-zinc-400 text-sm">Links para compartilhar no Instagram ou WhatsApp.</p>
                             </div>
                             <a
-                                href={host.includes('hostingersite.com') || host.includes('localhost')
-                                    ? `https://${host}/v/${loja?.slug}`
-                                    : `https://${loja?.custom_domain || host}`
+                                href={loja?.custom_domain
+                                    ? `https://${loja.custom_domain}`
+                                    : (host.includes('hostingersite.com') || host.includes('localhost')
+                                        ? `https://${host}/v/${loja?.slug}`
+                                        : `https://${loja?.slug}.${host}`)
                                 }
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -153,13 +155,21 @@ export default async function AdminDashboard() {
 
                         <div className="space-y-4">
                             {loja?.custom_domain && (
-                                <div className="p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg">
-                                    <span className="text-[10px] text-purple-400 font-black uppercase tracking-widest block mb-1">Domínio Oficial</span>
+                                <a
+                                    href={`https://${loja.custom_domain}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg block hover:bg-purple-950/30 transition-all group"
+                                >
+                                    <span className="text-[10px] text-purple-400 font-black uppercase tracking-widest block mb-1">Domínio Oficial (Clique para testar)</span>
                                     <div className="flex items-center justify-between gap-2">
-                                        <code className="text-purple-300 font-mono text-sm">https://{loja.custom_domain}</code>
-                                        <span className="bg-purple-500/20 text-purple-400 text-[9px] px-2 py-0.5 rounded">ATIVO</span>
+                                        <code className="text-purple-300 font-mono text-sm underline decoration-purple-500/30">https://{loja.custom_domain}</code>
+                                        <div className="flex items-center gap-2">
+                                            <span className="bg-purple-500/20 text-purple-400 text-[9px] px-2 py-0.5 rounded">DNS CONFIGURADO</span>
+                                            <svg className="text-purple-400 w-4 h-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
