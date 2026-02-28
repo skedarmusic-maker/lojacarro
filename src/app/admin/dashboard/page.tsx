@@ -173,27 +173,43 @@ export default async function AdminDashboard() {
                             )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <div className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg">
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Universal (Recomendado)</span>
-                                    <code className="text-blue-400 font-mono text-xs break-all block mb-2">
+                                <a
+                                    href={host.includes('localhost')
+                                        ? `http://localhost:3000/v/${loja?.slug}`
+                                        : `https://${host}/v/${loja?.slug}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg hover:bg-zinc-800/50 transition-all group"
+                                >
+                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link de Backup (Clique para Abrir)</span>
+                                    <code className="text-blue-400 font-mono text-xs break-all block mb-2 group-hover:underline">
                                         {host.includes('localhost')
                                             ? `http://localhost:3000/v/${loja?.slug}`
                                             : `https://${host}/v/${loja?.slug}`
                                         }
                                     </code>
-                                    <p className="text-[10px] text-zinc-500 italic">Funciona em qualquer lugar sem erros de segurança.</p>
-                                </div>
+                                    <p className="text-[10px] text-zinc-500 italic">Use este se o seu domínio oficial ainda estiver fora do ar.</p>
+                                </a>
 
-                                <div className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg opacity-60">
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Subdomínio</span>
-                                    <code className="text-emerald-500 font-mono text-xs break-all block mb-2">
+                                <a
+                                    href={host.includes('localhost')
+                                        ? `http://${loja?.slug}.localhost:3000`
+                                        : `https://${loja?.slug}.${host}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg opacity-60 hover:opacity-100 transition-all group"
+                                >
+                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Subdomínio (Teste)</span>
+                                    <code className="text-emerald-500 font-mono text-xs break-all block mb-2 group-hover:underline">
                                         {host.includes('localhost')
                                             ? `http://${loja?.slug}.localhost:3000`
                                             : `https://${loja?.slug}.${host}`
                                         }
                                     </code>
-                                    <p className="text-[10px] text-yellow-500/70">⚠️ Pode apresentar erro de SSL em domínios temporários.</p>
-                                </div>
+                                    <p className="text-[10px] text-yellow-500/70">⚠️ Depende de configuração Wildcard no seu servidor.</p>
+                                </a>
                             </div>
                         </div>
                     </div>
