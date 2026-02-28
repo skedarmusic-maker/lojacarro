@@ -131,28 +131,59 @@ export default async function AdminDashboard() {
                         </div>
                     )}
 
-                    <div className="mt-12 p-6 bg-emerald-950/20 border border-emerald-900/30 rounded-xl">
-                        <h3 className="text-emerald-500 font-semibold mb-2">Links da Vitrine</h3>
-                        <p className="text-zinc-300 text-sm mb-4">Compartilhe estes links com seus clientes no Instagram ou WhatsApp.</p>
+                    <div className="mt-12 p-6 bg-zinc-900/50 border border-zinc-800 rounded-xl">
+                        <div className="flex items-center justify-between mb-6">
+                            <div>
+                                <h3 className="text-white font-semibold">Minha Vitrine Online</h3>
+                                <p className="text-zinc-400 text-sm">Links para compartilhar no Instagram ou WhatsApp.</p>
+                            </div>
+                            <a
+                                href={host.includes('hostingersite.com') || host.includes('localhost')
+                                    ? `https://${host}/v/${loja?.slug}`
+                                    : `https://${loja?.custom_domain || host}`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2"
+                            >
+                                <span>Visualizar Loja</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></svg>
+                            </a>
+                        </div>
 
                         <div className="space-y-4">
-                            <div>
-                                <span className="text-xs text-zinc-500 block mb-1">Via Subdomínio (Elegante)</span>
-                                <code className="bg-black border border-emerald-900 px-4 py-2 rounded text-emerald-400 block break-all">
-                                    {host.includes('localhost')
-                                        ? `http://${loja?.slug}.localhost:3000`
-                                        : `https://${loja?.slug}.${host}`
-                                    }
-                                </code>
-                            </div>
-                            <div>
-                                <span className="text-xs text-zinc-500 block mb-1">Via Caminho (Universal / Sem erro de DNS)</span>
-                                <code className="bg-black border border-zinc-800 px-4 py-2 rounded text-blue-400 block break-all">
-                                    {host.includes('localhost')
-                                        ? `http://localhost:3000/v/${loja?.slug}`
-                                        : `https://${host}/v/${loja?.slug}`
-                                    }
-                                </code>
+                            {loja?.custom_domain && (
+                                <div className="p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg">
+                                    <span className="text-[10px] text-purple-400 font-black uppercase tracking-widest block mb-1">Domínio Oficial</span>
+                                    <div className="flex items-center justify-between gap-2">
+                                        <code className="text-purple-300 font-mono text-sm">https://{loja.custom_domain}</code>
+                                        <span className="bg-purple-500/20 text-purple-400 text-[9px] px-2 py-0.5 rounded">ATIVO</span>
+                                    </div>
+                                </div>
+                            )}
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg">
+                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Universal (Recomendado)</span>
+                                    <code className="text-blue-400 font-mono text-xs break-all block mb-2">
+                                        {host.includes('localhost')
+                                            ? `http://localhost:3000/v/${loja?.slug}`
+                                            : `https://${host}/v/${loja?.slug}`
+                                        }
+                                    </code>
+                                    <p className="text-[10px] text-zinc-500 italic">Funciona em qualquer lugar sem erros de segurança.</p>
+                                </div>
+
+                                <div className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg opacity-60">
+                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Subdomínio</span>
+                                    <code className="text-emerald-500 font-mono text-xs break-all block mb-2">
+                                        {host.includes('localhost')
+                                            ? `http://${loja?.slug}.localhost:3000`
+                                            : `https://${loja?.slug}.${host}`
+                                        }
+                                    </code>
+                                    <p className="text-[10px] text-yellow-500/70">⚠️ Pode apresentar erro de SSL em domínios temporários.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
