@@ -83,6 +83,12 @@
       "namedRegex": "^/_not\\-found(?:/)?$"
     },
     {
+      "page": "/admin/actions/deleteVeiculo",
+      "regex": "^/admin/actions/deleteVeiculo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/actions/deleteVeiculo(?:/)?$"
+    },
+    {
       "page": "/admin/config",
       "regex": "^/admin/config(?:/)?$",
       "routeKeys": {},

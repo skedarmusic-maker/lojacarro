@@ -1,6 +1,7 @@
 import { getLojaBySlug } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { headers } from 'next/headers'
+import StorefrontHeader from '../StorefrontHeader'
 import StorefrontFooter from '../StorefrontFooter'
 import { ShieldCheck, Award, ThumbsUp } from 'lucide-react'
 
@@ -21,6 +22,9 @@ export async function generateMetadata({ params }: { params: Promise<{ tenantId:
 export default async function SobreLojaPage({ params }: { params: Promise<{ tenantId: string }> }) {
     const resolvedParams = await params
     const loja = await getLojaBySlug(resolvedParams.tenantId)
+
+    const headersList = await headers()
+    const basePath = headersList.get('x-base-path') || ''
 
     if (!loja) {
         notFound()
@@ -46,22 +50,13 @@ export default async function SobreLojaPage({ params }: { params: Promise<{ tena
 
     return (
         <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 border-t-4" style={{ borderTopColor: config_visual?.cor_primaria || '#e5e7eb' }}>
-            <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <div className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        {config_visual?.logo_url && (
-                            <img src={config_visual.logo_url} alt={`Logo ${nome}`} className="h-10 w-auto" />
-                        )}
-                        <Link href={`/${resolvedParams.tenantId}`} style={{ color: "var(--color-brand)" }}>{nome}</Link>
-                    </div>
-                    <nav className="hidden md:flex gap-6 font-medium text-gray-600">
-                        <Link href={`/${resolvedParams.tenantId}`} className="hover:text-gray-900 transition-colors">Estoque</Link>
-                        <Link href={`/${resolvedParams.tenantId}/sobre`} className="text-gray-900 font-bold">Sobre Nós</Link>
-                        <Link href={`/${resolvedParams.tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href={`/${resolvedParams.tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
-                    </nav>
-                </div>
-            </header>
+            <StorefrontHeader
+                nome={nome}
+                logo_url={config_visual?.logo_url}
+                cor_primaria={config_visual?.cor_primaria || '#e5e7eb'}
+                basePath={basePath}
+                activePath="sobre"
+            />
 
             <main className="flex-1">
                 {/* Hero Header Institucional */}
@@ -180,6 +175,7 @@ export default async function SobreLojaPage({ params }: { params: Promise<{ tena
                 logoUrl={config_visual?.logo_url}
                 corPrimaria={config_visual?.cor_primaria || '#2563eb'}
                 contato={dados_contato || {}}
+                basePath={basePath}
             />
         </div>
     )

@@ -1,7 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from "next/navigation"
 import Link from 'next/link'
+import { headers } from 'next/headers'
 import { Calendar, MapPin, Gauge, MessageCircle, X } from 'lucide-react'
+
+import StorefrontHeader from './StorefrontHeader'
 
 import StorefrontFilters from './StorefrontFilters'
 import HeroCarousel from './HeroCarousel'
@@ -25,6 +28,9 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
     const cat = typeof resolvedSearchParams.cat === 'string' ? resolvedSearchParams.cat : ''
     const marca = typeof resolvedSearchParams.marca === 'string' ? resolvedSearchParams.marca : ''
     const sort = typeof resolvedSearchParams.sort === 'string' ? resolvedSearchParams.sort : 'marca-modelo'
+
+    const headersList = await headers()
+    const basePath = headersList.get('x-base-path') || ''
 
     if (!tenantId || tenantId === 'favicon.ico') {
         notFound()
@@ -127,22 +133,13 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                 "--color-brand": corPrimaria,
             } as React.CSSProperties}
         >
-            <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <div className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        {loja.config_visual?.logo_url && (
-                            <img src={loja.config_visual.logo_url} alt={`Logo ${loja.nome}`} className="h-10 w-auto" />
-                        )}
-                        <span style={{ color: "var(--color-brand)" }}>{loja.nome}</span>
-                    </div>
-                    <nav className="hidden md:flex gap-6 font-medium text-gray-600">
-                        <Link href={`/${tenantId}`} className="text-gray-900 font-bold">Estoque</Link>
-                        <Link href={`/${tenantId}/sobre`} className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
-                        <Link href={`/${tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href={`/${tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
-                    </nav>
-                </div>
-            </header>
+            <StorefrontHeader
+                nome={loja.nome}
+                logo_url={loja.config_visual?.logo_url}
+                cor_primaria={corPrimaria}
+                basePath={basePath}
+                activePath="estoque"
+            />
 
             {/* Hero Banner Dinâmico Premium */}
             <HeroCarousel lojaNome={loja.nome} corPrimaria={corPrimaria} />
@@ -186,7 +183,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
 
             {/* Visual Categories Section */}
             <StorefrontCategories
-                tenantId={tenantId}
+                basePath={basePath}
                 availableCategories={Array.from(availableCategories).sort()}
                 categoriaCount={categoriaCount}
                 activeCategory={cat}
@@ -299,6 +296,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                 logoUrl={loja.config_visual?.logo_url || ''}
                 corPrimaria={corPrimaria}
                 contato={loja.dados_contato || {}}
+                basePath={basePath}
             />
         </div>
     )

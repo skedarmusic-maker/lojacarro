@@ -1,13 +1,13 @@
 import Link from 'next/link'
 
 interface StorefrontCategoriesProps {
-    tenantId: string
+    basePath: string
     availableCategories: string[]
     categoriaCount: Record<string, number>
     activeCategory?: string
 }
 
-export default function StorefrontCategories({ tenantId, availableCategories, categoriaCount, activeCategory }: StorefrontCategoriesProps) {
+export default function StorefrontCategories({ basePath, availableCategories, categoriaCount, activeCategory }: StorefrontCategoriesProps) {
     // Mock das imagens de categoria (em um projeto real poderíamos salvar no storage)
     const categoryImages: Record<string, string> = {
         'Carros elétricos': 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=500&auto=format&fit=crop&q=60',
@@ -30,7 +30,7 @@ export default function StorefrontCategories({ tenantId, availableCategories, ca
                     {availableCategories.map(categoria => (
                         <Link
                             key={categoria}
-                            href={`/${tenantId}?cat=${encodeURIComponent(categoria)}`}
+                            href={`${basePath || '/'}?cat=${encodeURIComponent(categoria)}`}
                             scroll={false}
                             className={`snap-center flex-none w-[200px] h-[200px] rounded-xl overflow-hidden relative group transition-all border-2 bg-white ${activeCategory === categoria ? 'border-[var(--color-brand)] scale-105 shadow-xl z-10' : 'border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md'}`}
                         >

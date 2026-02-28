@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { headers } from 'next/headers'
+import StorefrontHeader from '../StorefrontHeader'
 import { MapPin, Phone, Mail, Instagram, Clock, Car } from 'lucide-react'
 import StorefrontFooter from '../StorefrontFooter'
 
@@ -21,6 +22,9 @@ export default async function TenantContato({ params }: { params: Promise<{ tena
 
     const contato = loja.dados_contato || {}
     const hasZap = !!contato.whatsapp
+
+    const headersList = await headers()
+    const basePath = headersList.get('x-base-path') || ''
     const whatsappLink = hasZap ? `https://wa.me/55${contato.whatsapp.replace(/\D/g, '')}?text=Olá! Vim pelo site da loja e gostaria de tirar algumas dúvidas.` : '#'
 
     const corPrimaria = loja.config_visual?.cor_primaria || '#3b82f6'
@@ -51,22 +55,13 @@ export default async function TenantContato({ params }: { params: Promise<{ tena
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <Link href={`/${tenantId}`} className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        {loja.config_visual?.logo_url && (
-                            <img src={loja.config_visual.logo_url} alt={`Logo ${loja.nome}`} className="h-10 w-auto" />
-                        )}
-                        <span style={{ color: "var(--color-brand)" }}>{loja.nome}</span>
-                    </Link>
-                    <nav className="hidden md:flex gap-6 font-medium text-gray-500">
-                        <Link href={`/${tenantId}`} className="hover:text-gray-900 transition-colors">Estoque</Link>
-                        <Link href={`/${tenantId}/sobre`} className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
-                        <Link href={`/${tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href={`/${tenantId}/contato`} className="text-gray-900 font-bold">Contato</Link>
-                    </nav>
-                </div>
-            </header>
+            <StorefrontHeader
+                nome={loja.nome}
+                logo_url={loja.config_visual?.logo_url}
+                cor_primaria={corPrimaria}
+                basePath={basePath}
+                activePath="contato"
+            />
 
             <main className="flex-1 max-w-7xl mx-auto px-4 w-full py-16">
                 <div className="text-center mb-16 animate-in slide-in-from-bottom-5 fade-in duration-700">
@@ -145,7 +140,7 @@ export default async function TenantContato({ params }: { params: Promise<{ tena
                                     {(contato.cidade || contato.estado) && (
                                         <p className="text-gray-400 text-sm mt-1">{contato.cidade} - {contato.estado} • {contato.cep}</p>
                                     )}
-                                    <Link href="/localizacao" className="inline-block mt-4 text-sm font-medium border border-gray-300 hover:border-[var(--color-brand)] text-gray-700 px-4 py-2 rounded-full transition-colors">Ver Mapa Completo</Link>
+                                    <a href={`${basePath}/localizacao`} className="inline-block mt-4 text-sm font-medium border border-gray-300 hover:border-[var(--color-brand)] text-gray-700 px-4 py-2 rounded-full transition-colors">Ver Mapa Completo</a>
                                 </div>
                             </div>
 
@@ -166,6 +161,7 @@ export default async function TenantContato({ params }: { params: Promise<{ tena
                 logoUrl={loja.config_visual?.logo_url || ''}
                 corPrimaria={corPrimaria}
                 contato={loja.dados_contato || {}}
+                basePath={basePath}
             />
         </div>
     )

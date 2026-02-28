@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import InstagramPublishButton from './InstagramPublishButton'
+import { deleteVeiculo } from './actions'
 type Veiculo = any // Simplificação, usar type real depois
 type LojistaType = any // Simplificação
 
@@ -157,7 +158,7 @@ export default function AdminVeiculoCard({ veiculo, lojaId }: { veiculo: Veiculo
                 {/* Acões Originais (Editar / Excluir) */}
                 <div className="flex items-center justify-end gap-2 mt-4 w-full">
                     <InstagramPublishButton veiculo={veiculo} renderAsIcon />
-                    <form action="/admin/actions/deleteVeiculo" method="POST" className="flex items-center gap-2 m-0 p-0">
+                    <form action={async (formData) => { await deleteVeiculo(formData) }} className="flex items-center gap-2 m-0 p-0">
                         <input type="hidden" name="id" value={veiculo.id} />
                         <a href={`/admin/estoque/${veiculo.id}`} className="text-zinc-500 hover:text-blue-400 transition-colors p-2 text-xs font-medium bg-zinc-800 rounded">
                             Editar

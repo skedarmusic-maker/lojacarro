@@ -2,8 +2,10 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from "next/navigation"
 import Link from 'next/link'
 import type { Metadata, ResolvingMetadata } from 'next'
+import { headers } from 'next/headers'
 import { Phone, MessageCircle } from 'lucide-react'
 import StorefrontFooter from '../../StorefrontFooter'
+import StorefrontHeader from '../../StorefrontHeader'
 import FinancingModalClient from './FinancingModalClient'
 import VehicleGallery from './VehicleGallery'
 
@@ -82,24 +84,18 @@ export default async function DetalhesVeiculoPage({ params }: CarPageProps) {
 
     const corPrimaria = loja.config_visual?.cor_primaria || '#3b82f6'
 
+    const headersList = await headers()
+    const basePath = headersList.get('x-base-path') || ''
+
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900 font-sans flex flex-col">
-            <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <div className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        {loja.config_visual?.logo_url && (
-                            <img src={loja.config_visual.logo_url} alt={`Logo ${loja.nome}`} className="h-10 w-auto" />
-                        )}
-                        <Link href={`/${tenantId}`} style={{ color: "var(--color-brand)" }}>{loja.nome}</Link>
-                    </div>
-                    <nav className="hidden md:flex gap-6 font-medium text-gray-600">
-                        <Link href={`/${tenantId}`} className="hover:text-gray-900 transition-colors">Estoque</Link>
-                        <Link href={`/${tenantId}/sobre`} className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
-                        <Link href={`/${tenantId}/localizacao`} className="hover:text-gray-900 transition-colors">Localização</Link>
-                        <Link href={`/${tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
-                    </nav>
-                </div>
-            </header>
+            <StorefrontHeader
+                nome={loja.nome}
+                logo_url={loja.config_visual?.logo_url}
+                cor_primaria={corPrimaria}
+                basePath={basePath}
+                activePath="estoque"
+            />
 
             {/* Main Content Area - Webmotors Style */}
             <main className="flex-1 w-full pb-24 md:pb-12 bg-white md:bg-gray-50">
@@ -273,7 +269,7 @@ export default async function DetalhesVeiculoPage({ params }: CarPageProps) {
 
             {/* Categorias (Continuar Explorando) */}
             <StorefrontCategories
-                tenantId={tenantId}
+                basePath={basePath}
                 availableCategories={Array.from(availableCategories).sort()}
                 categoriaCount={categoriaCount}
             />
@@ -284,6 +280,7 @@ export default async function DetalhesVeiculoPage({ params }: CarPageProps) {
                 logoUrl={loja.config_visual?.logo_url || ''}
                 corPrimaria={corPrimaria}
                 contato={loja.dados_contato || {}}
+                basePath={basePath}
             />
         </div>
     )

@@ -18,9 +18,10 @@ type StorefrontFooterProps = {
         cep?: string
         horario_funcionamento?: string
     }
+    basePath?: string
 }
 
-export default function StorefrontFooter({ slug, lojaNome, logoUrl, corPrimaria, contato }: StorefrontFooterProps) {
+export default function StorefrontFooter({ slug, lojaNome, logoUrl, corPrimaria, contato, basePath = '' }: StorefrontFooterProps) {
     return (
         <footer className="bg-white border-t border-gray-200 pt-16 pb-8 text-sm">
             <div className="max-w-7xl mx-auto px-4">
@@ -28,7 +29,7 @@ export default function StorefrontFooter({ slug, lojaNome, logoUrl, corPrimaria,
 
                     {/* Brand / Sobre */}
                     <div className="flex flex-col gap-4">
-                        <Link href={`/${slug}`} className="inline-block">
+                        <Link href={`${basePath || '/'}`} className="inline-block">
                             {logoUrl ? (
                                 <img src={logoUrl} alt={`Logo ${lojaNome}`} className="h-12 w-auto" />
                             ) : (
@@ -83,10 +84,10 @@ export default function StorefrontFooter({ slug, lojaNome, logoUrl, corPrimaria,
                     <div>
                         <h4 className="font-bold text-gray-900 mb-6 uppercase tracking-wider text-xs">Acesso Rápido</h4>
                         <ul className="flex flex-col gap-3">
-                            <li><Link href={`/${slug}`} className="text-gray-500 hover:text-gray-900 transition-colors">Ver Estoque</Link></li>
-                            <li><Link href={`/${slug}/sobre`} className="text-gray-500 hover:text-gray-900 transition-colors">Sobre a Loja</Link></li>
-                            <li><Link href={`/${slug}/localizacao`} className="text-gray-500 hover:text-gray-900 transition-colors">Nossa Localização</Link></li>
-                            <li><Link href={`/${slug}/contato`} className="text-gray-500 hover:text-gray-900 transition-colors">Fale Conosco</Link></li>
+                            <li><Link href={`${basePath || '/'}`} className="text-gray-500 hover:text-gray-900 transition-colors">Ver Estoque</Link></li>
+                            <li><Link href={`${basePath}/sobre`} className="text-gray-500 hover:text-gray-900 transition-colors">Sobre a Loja</Link></li>
+                            <li><Link href={`${basePath}/localizacao`} className="text-gray-500 hover:text-gray-900 transition-colors">Nossa Localização</Link></li>
+                            <li><Link href={`${basePath}/contato`} className="text-gray-500 hover:text-gray-900 transition-colors">Fale Conosco</Link></li>
                         </ul>
                     </div>
 

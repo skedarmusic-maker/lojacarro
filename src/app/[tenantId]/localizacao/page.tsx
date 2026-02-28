@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
-import Link from 'next/link'
+import { headers } from 'next/headers'
+import StorefrontHeader from '../StorefrontHeader'
 import { MapPin, Navigation2, Compass } from 'lucide-react'
 import StorefrontFooter from '../StorefrontFooter'
 
@@ -21,6 +22,9 @@ export default async function TenantLocalizacao({ params }: { params: Promise<{ 
 
     const contato = loja.dados_contato || {}
     const corPrimaria = loja.config_visual?.cor_primaria || '#3b82f6'
+
+    const headersList = await headers()
+    const basePath = headersList.get('x-base-path') || ''
 
     // Fallback caso nao tenha iframe (Evitar que quebre)
     const hasMap = contato.google_maps_embed && contato.google_maps_embed.includes('<iframe')
@@ -62,22 +66,13 @@ export default async function TenantLocalizacao({ params }: { params: Promise<{ 
                 dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
             />
 
-            <header className="border-b border-gray-200 bg-white sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between">
-                    <Link href={`/${tenantId}`} className="text-2xl font-black tracking-tight flex items-center gap-3">
-                        {loja.config_visual?.logo_url && (
-                            <img src={loja.config_visual.logo_url} alt={`Logo ${loja.nome}`} className="h-10 w-auto" />
-                        )}
-                        <span style={{ color: "var(--color-brand)" }}>{loja.nome}</span>
-                    </Link>
-                    <nav className="hidden md:flex gap-6 font-medium text-gray-500">
-                        <Link href={`/${tenantId}`} className="hover:text-gray-900 transition-colors">Estoque</Link>
-                        <Link href={`/${tenantId}/sobre`} className="hover:text-gray-900 transition-colors">Sobre Nós</Link>
-                        <Link href={`/${tenantId}/localizacao`} className="text-gray-900 font-bold">Localização</Link>
-                        <Link href={`/${tenantId}/contato`} className="hover:text-gray-900 transition-colors">Contato</Link>
-                    </nav>
-                </div>
-            </header>
+            <StorefrontHeader
+                nome={loja.nome}
+                logo_url={loja.config_visual?.logo_url}
+                cor_primaria={corPrimaria}
+                basePath={basePath}
+                activePath="localizacao"
+            />
 
             <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-16">
 
@@ -157,6 +152,7 @@ export default async function TenantLocalizacao({ params }: { params: Promise<{ 
                 logoUrl={loja.config_visual?.logo_url || ''}
                 corPrimaria={corPrimaria}
                 contato={loja.dados_contato || {}}
+                basePath={basePath}
             />
         </div>
     )

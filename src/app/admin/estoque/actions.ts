@@ -194,3 +194,17 @@ export async function submitNovoVeiculo(formData: FormData) {
     revalidatePath('/admin/dashboard')
     return { success: true }
 }
+
+export async function deleteVeiculo(formData: FormData) {
+    const supabase = await createClient()
+
+    // Opcional: A segurança (RLS) no banco garante
+    // que só deleta se for o dono.
+    const id = formData.get('id') as string
+    if (!id) return { error: 'Sem ID' }
+
+    await supabase.from('veiculos').delete().eq('id', id)
+    revalidatePath('/admin/estoque')
+    revalidatePath('/admin/dashboard')
+    return { success: true }
+}
