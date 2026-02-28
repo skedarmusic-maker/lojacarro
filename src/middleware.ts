@@ -78,7 +78,7 @@ export async function middleware(req: NextRequest) {
 
     // 4. Fallback: Suporte para rota /v/:slug (ex: plataforma.com/v/marinhos)
     if (isRootDomain && url.pathname.startsWith('/v/')) {
-        const segments = url.pathname.split('/').filter(Boolean) // ['', 'v', 'slug', 'rest'] -> ['v', 'slug', 'rest']
+        const segments = url.pathname.split('/').filter(Boolean)
         const pathSlug = segments[1]
 
         if (pathSlug) {
@@ -86,23 +86,33 @@ export async function middleware(req: NextRequest) {
             const rewritePath = `/${pathSlug}${remainingPath ? `/${remainingPath}` : ''}`
 
             console.log(`[Middleware] Rewrite /v/: ${url.pathname} -> ${rewritePath}`)
-            return NextResponse.rewrite(new URL(`${rewritePath}${url.search}`, req.url))
+            const requestHeaders = new Headers(req.headers)
+            requestHeaders.set('x-base-path', `/v/${pathSlug}`)
+            return NextResponse.rewrite(new URL(`${rewritePath}${url.search}`, req.url), {
+                request: { headers: requestHeaders }
+            })
         }
     }
 
     // 5. Redirecionamento/Reescrita via Subdomínio
     if (!isRootDomain && tenantSlug) {
-        // Evita loop infinito: se o pathname já começa com o tenantSlug, não reescreve de novo
         if (url.pathname.startsWith(`/${tenantSlug}`)) {
             return NextResponse.next()
         }
 
-        // É uma vitrine! Redireciona de forma invisível para o folder genérico app/[tenantId]
-        return NextResponse.rewrite(new URL(`/${tenantSlug}${url.pathname}${url.search}`, req.url))
+        const requestHeaders = new Headers(req.headers)
+        requestHeaders.set('x-base-path', '')
+        return NextResponse.rewrite(new URL(`/${tenantSlug}${url.pathname}${url.search}`, req.url), {
+            request: { headers: requestHeaders }
+        })
     }
 
-    // Se for raiz, vai normal (cairá no app/page.tsx, /admin, ou /super-admin)
-    return NextResponse.next()
+    // Se for raiz, vai normal
+    const requestHeaders = new Headers(req.headers)
+    requestHeaders.set('x-base-path', '')
+    return NextResponse.next({
+        request: { headers: requestHeaders }
+    })
 }
 
 export const config = {
