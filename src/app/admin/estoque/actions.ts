@@ -105,19 +105,62 @@ const MOCK_DB: Record<string, any> = {
 export async function fetchPlacaFipe(placa: string) {
     if (!placa) return { error: 'Placa não recebida' }
 
-    // Simular delay de rede
-    await new Promise(resolve => setTimeout(resolve, 800));
+    const btok = process.env.APIBRASIL_TOKEN;
+    const dtok = process.env.APIBRASIL_DEVICE_TOKEN;
 
-    // Formatar placa (remover hifen se tiver)
+    // Tentar API Real se o token estiver configurado
+    if (btok) {
+        try {
+            const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${btok}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    tipo: 'veiculos-dados-v1',
+                    placa: placa.replace('-', '').toUpperCase(),
+                    homolog: false // Mudar para true se quiser apenas testes sem custo
+                })
+            });
+
+            const result = await res.json();
+
+            if (!result.error && result.data) {
+                const d = result.data;
+                // O campo modelo_marca geralmente vem como "MARCA/MODELO"
+                const parts = (d.modelo_marca || '').split('/');
+                const marca = parts[0] || '';
+                const modelo = parts[1] || parts[0] || '';
+
+                return {
+                    data: {
+                        marca: marca.trim().toUpperCase(),
+                        modelo: modelo.trim().toUpperCase(),
+                        anoFabricacao: d.ano_fabricacao || d.ano || '',
+                        anoModelo: d.ano_modelo || d.ano || '',
+                        preco_fipe: 0 // Este endpoint básico pode não retornar FIPE diretamente
+                    }
+                }
+            }
+
+            // Logar erro mas permitir fallback pro Mock
+            console.log('APIBrasil API Info:', result.message || 'Erro desconhecido');
+
+        } catch (e) {
+            console.error('Erro na requisição APIBrasil:', e);
+        }
+    }
+
+    // FALLBACK PARA MOCK (Base de testes)
+    // Se a API real falhar ou não estiver disponível, usamos os dados de teste
     const placaLimpa = placa.replace('-', '').toUpperCase();
-
     const veiculoEncontrado = MOCK_DB[placaLimpa];
 
     if (!veiculoEncontrado) {
         return { error: 'Placa não encontrada na nossa base de testes provisória.' }
     }
 
-    // Adaptar o retorno do mock sinesp para o formato que nosso front-end estava esperando
     return {
         data: {
             marca: veiculoEncontrado.marca,
