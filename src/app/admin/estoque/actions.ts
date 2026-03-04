@@ -111,6 +111,7 @@ export async function fetchPlacaFipe(placa: string) {
     // Tentar API Real se o token estiver configurado
     if (btok) {
         try {
+            console.log('Consultando APIBrasil para placa:', placa.replace('-', '').toUpperCase());
             const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
                 method: 'POST',
                 headers: {
@@ -118,37 +119,56 @@ export async function fetchPlacaFipe(placa: string) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    tipo: 'veiculos-dados-v1',
+                    tipo: 'agregados-basica',
                     placa: placa.replace('-', '').toUpperCase(),
-                    homolog: false // Mudar para true se quiser apenas testes sem custo
+                    homolog: false // Modo de busca real (requer saldo na APIBrasil)
                 })
             });
 
             const result = await res.json();
+            console.log('Status da Resposta APIBrasil:', res.status);
+            console.log('Erro na Resposta APIBrasil:', result.error);
 
             if (!result.error && result.data) {
                 const d = result.data;
-                // O campo modelo_marca geralmente vem como "MARCA/MODELO"
-                const parts = (d.modelo_marca || '').split('/');
-                const marca = parts[0] || '';
-                const modelo = parts[1] || parts[0] || '';
+
+                // No 'agregados-basica', fabricante e modelo vem separados
+                let marca = d.fabricante || '';
+                let modelo = d.modelo || '';
+
+                // Fallback caso venha no formato antigo 'modelo_marca' (MARCA/MODELO)
+                if (!marca && d.modelo_marca) {
+                    const parts = (d.modelo_marca || '').split('/');
+                    marca = parts[0] || '';
+                    modelo = parts[1] || parts[0] || '';
+                }
+
+                console.log('Dados mapeados:', marca, modelo);
 
                 return {
                     data: {
-                        marca: marca.trim().toUpperCase(),
-                        modelo: modelo.trim().toUpperCase(),
+                        marca: marca.toString().trim().toUpperCase(),
+                        modelo: modelo.toString().trim().toUpperCase(),
                         anoFabricacao: d.ano_fabricacao || d.ano || '',
                         anoModelo: d.ano_modelo || d.ano || '',
-                        preco_fipe: 0 // Este endpoint básico pode não retornar FIPE diretamente
+                        cor: d.cor || '',
+                        combustivel: d.combustivel || '',
+                        chassi: d.chassi || '',
+                        renavam: d.renavam || '',
+                        placa: d.placa || '',
+                        potencia: d.potencia || '',
+                        cilindradas: d.cilindradas || '',
+                        municipio: d.cidade || d.municipio || '',
+                        uf: d.uf_jurisdicao || d.uf || '',
+                        preco_fipe: 0
                     }
                 }
             }
 
-            // Logar erro mas permitir fallback pro Mock
-            console.log('APIBrasil API Info:', result.message || 'Erro desconhecido');
+            console.log('Aviso/Erro APIBrasil:', result.message || 'Sem mensagem de retorno');
 
         } catch (e) {
-            console.error('Erro na requisição APIBrasil:', e);
+            console.error('Erro de conexão/parse APIBrasil:', e);
         }
     }
 
@@ -167,6 +187,13 @@ export async function fetchPlacaFipe(placa: string) {
             modelo: veiculoEncontrado.modelo,
             anoFabricacao: veiculoEncontrado.ano,
             anoModelo: veiculoEncontrado.anoModelo,
+            cor: veiculoEncontrado.cor || '',
+            combustivel: veiculoEncontrado.combustivel || '',
+            chassi: veiculoEncontrado.chassi || '',
+            renavam: veiculoEncontrado.renavam || '',
+            placa: veiculoEncontrado.placa || '',
+            municipio: veiculoEncontrado.municipio || '',
+            uf: veiculoEncontrado.uf || '',
             preco_fipe: veiculoEncontrado.preco_fipe || 0
         }
     }
@@ -222,6 +249,15 @@ export async function submitNovoVeiculo(formData: FormData) {
         preco: Number(formData.get('preco')),
         quilometragem: Number(formData.get('km')) || 0,
         categoria: formData.get('categoria') as string || 'Outros',
+        cor: formData.get('cor') as string,
+        combustivel: formData.get('combustivel') as string,
+        placa: formData.get('placa') as string,
+        chassi: formData.get('chassi') as string,
+        renavam: formData.get('renavam') as string,
+        municipio: formData.get('municipio') as string,
+        uf: formData.get('uf') as string,
+        potencia: formData.get('potencia') as string,
+        cilindradas: formData.get('cilindradas') as string,
         status: 'disponivel',
         imagens: imagens
     }

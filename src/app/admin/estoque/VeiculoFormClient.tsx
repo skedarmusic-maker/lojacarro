@@ -19,6 +19,15 @@ export default function VeiculoFormClient() {
     const [anoMod, setAnoMod] = useState('')
     const [preco, setPreco] = useState('')
     const [km, setKm] = useState('')
+    const [cor, setCor] = useState('')
+    const [combustivel, setCombustivel] = useState('')
+    const [chassi, setChassi] = useState('')
+    const [renavam, setRenavam] = useState('')
+    const [placa, setPlaca] = useState('')
+    const [municipio, setMunicipio] = useState('')
+    const [uf, setUf] = useState('')
+    const [potencia, setPotencia] = useState('')
+    const [cilindradas, setCilindradas] = useState('')
 
     const handleBuscarPlaca = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -45,6 +54,16 @@ export default function VeiculoFormClient() {
             setModelo(carro.modelo || '')
             setAnoFab(carro.anoFabricacao || '')
             setAnoMod(carro.anoModelo || '')
+            setCor(carro.cor || '')
+            setCombustivel(carro.combustivel || '')
+            setChassi(carro.chassi || '')
+            setRenavam(carro.renavam || '')
+            setPlaca(carro.placa || placaInput)
+            setMunicipio(carro.municipio || '')
+            setUf(carro.uf || '')
+            setPotencia(carro.potencia || '')
+            setCilindradas(carro.cilindradas || '')
+
             if (carro.preco_fipe && carro.preco_fipe > 0) {
                 setPreco(carro.preco_fipe.toString())
             }
@@ -96,6 +115,16 @@ export default function VeiculoFormClient() {
             setAnoMod('')
             setPreco('')
             setKm('')
+            setCor('')
+            setCombustivel('')
+            setChassi('')
+            setRenavam('')
+            setPlaca('')
+            setMunicipio('')
+            setUf('')
+            setPotencia('')
+            setCilindradas('')
+
             // Also reset the file input if any
             const formElement = e.target as HTMLFormElement;
             formElement.reset();
@@ -168,6 +197,16 @@ export default function VeiculoFormClient() {
                 </div>
 
                 <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Cor</label>
+                    <input name="cor" value={cor} onChange={e => setCor(e.target.value)} placeholder="Ex: Branco" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Combustível</label>
+                    <input name="combustivel" value={combustivel} onChange={e => setCombustivel(e.target.value)} placeholder="Ex: Flex" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
                     <label className="text-xs font-medium text-zinc-400">Categoria</label>
                     <select required name="categoria" defaultValue="Outros" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white">
                         <option value="Carros elétricos">Carros elétricos</option>
@@ -177,6 +216,37 @@ export default function VeiculoFormClient() {
                         <option value="SUVs">SUVs</option>
                         <option value="Outros">Outros</option>
                     </select>
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Placa</label>
+                    <input name="placa" value={placa} onChange={e => setPlaca(e.target.value)} placeholder="ABC1D23" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Chassi</label>
+                    <input name="chassi" value={chassi} onChange={e => setChassi(e.target.value)} placeholder="Número do Chassi" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Renavam</label>
+                    <input name="renavam" value={renavam} onChange={e => setRenavam(e.target.value)} placeholder="Número do Renavam" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Cidade/UF</label>
+                    <div className="flex gap-2">
+                        <input name="municipio" value={municipio} onChange={e => setMunicipio(e.target.value)} placeholder="Cidade" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                        <input name="uf" value={uf} onChange={e => setUf(e.target.value.toUpperCase())} maxLength={2} placeholder="UF" className="w-16 rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white text-center" />
+                    </div>
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Potência (cv) / Cilindradas</label>
+                    <div className="flex gap-2">
+                        <input name="potencia" value={potencia} onChange={e => setPotencia(e.target.value)} placeholder="Potência" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                        <input name="cilindradas" value={cilindradas} onChange={e => setCilindradas(e.target.value)} placeholder="CC" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                    </div>
                 </div>
 
                 <div className="space-y-1 lg:col-span-2">
