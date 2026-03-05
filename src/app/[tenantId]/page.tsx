@@ -11,6 +11,7 @@ import HeroCarousel from './HeroCarousel'
 import VehicleImageSlider from './VehicleImageSlider'
 import StorefrontFooter from './StorefrontFooter'
 import StorefrontCategories from './StorefrontCategories'
+import FavoriteButton from './FavoriteButton'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -213,75 +214,78 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                 ) : (
                     <div className="flex flex-col md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
                         {veiculos.map((car: any) => (
-                            <div key={car.id} className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all group flex flex-row md:flex-col shadow-sm">
+                            <div key={car.id} className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all group flex flex-col shadow-sm">
 
-                                {/* Thumbnail: Pequena na esquerda (Mobile) / Larga no topo (Desktop) */}
-                                <Link href={`/${tenantId}/v/${car.id}`} className="w-[130px] md:w-full h-auto min-h-[140px] md:aspect-[4/3] shrink-0 bg-gray-100 block overflow-hidden relative">
-                                    <div className="absolute inset-0">
+                                {/* Thumbnail: Topo do Card (Mobile e Desktop) com proporção controlada */}
+                                <div className="w-full aspect-[4/3] shrink-0 bg-gray-100 block overflow-hidden relative">
+                                    <Link href={`/${tenantId}/v/${car.id}`} className="absolute inset-0 z-10">
                                         <VehicleImageSlider
                                             images={car.imagens || []}
                                             modelo={car.modelo}
                                         />
-                                    </div>
-                                </Link>
+                                    </Link>
+                                    <FavoriteButton carId={car.id} />
+                                </div>
 
-                                {/* Info Box: Direita (Mobile) / Embaixo (Desktop) */}
-                                <div className="p-3 md:p-5 flex-1 flex flex-col justify-between">
-                                    <div>
-                                        <div className="flex justify-between items-start mb-1">
-                                            <Link href={`/${tenantId}/v/${car.id}`} className="flex-1">
-                                                <div className="text-[10px] md:text-sm font-bold tracking-widest text-gray-400 uppercase mb-0.5">{car.marca}</div>
-                                                <h3 className="text-sm md:text-xl font-bold text-gray-900 leading-tight group-hover:text-[var(--color-brand)] transition-colors line-clamp-2 md:mb-2">{car.modelo}</h3>
-                                                <p className="text-[10px] md:text-sm text-gray-500 mt-0.5 line-clamp-1 hidden md:block">{car.categoria ? `Categoria: ${car.categoria}` : car.status}</p>
-                                            </Link>
+                                {/* Info Box: Base do Container */}
+                                <div className="p-4 flex-1 flex flex-col">
+                                    <Link href={`/${tenantId}/v/${car.id}`} className="block flex-1">
+                                        {/* Linha 1: Marca + Modelo */}
+                                        <h3 className="text-base font-bold text-gray-900 leading-tight group-hover:text-[var(--color-brand)] transition-colors line-clamp-2 uppercase">
+                                            {car.marca} {car.modelo}
+                                        </h3>
+
+                                        {/* Linha 2: Ano • Quilometragem */}
+                                        <div className="text-sm font-medium text-gray-600 mt-1">
+                                            {car.ano_fabricacao}/{car.ano_modelo} &bull; {car.quilometragem.toLocaleString('pt-BR')} km
                                         </div>
 
-                                        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-y-1 md:gap-y-2 gap-x-2 md:gap-x-4 text-[10px] md:text-sm font-semibold text-gray-500 mt-2 md:mt-4 mb-2 md:mb-6">
-                                            <div className="flex items-center gap-1.5"><Calendar size={14} className="text-gray-400" /> {car.ano_fabricacao}/{car.ano_modelo}</div>
-                                            <div className="flex items-center gap-1.5"><Gauge size={14} className="text-gray-400" /> {car.quilometragem.toLocaleString('pt-BR')} km</div>
+                                        {/* Linha 3: Combustível • Câmbio */}
+                                        <div className="text-xs font-medium text-gray-500 mt-0.5 mb-3 truncate">
+                                            {car.combustivel || 'Flex'} {car.cambio ? `• ${car.cambio}` : ''}
                                         </div>
-                                    </div>
 
-                                    <div className="mt-auto pt-2 md:pt-4 flex flex-col md:flex-col justify-between gap-2 md:gap-4 border-t border-gray-100">
-                                        <Link href={`/${tenantId}/v/${car.id}`}>
-                                            {car.preco_promocional > 0 ? (
-                                                <div className="flex flex-col">
-                                                    <span className="text-gray-400 text-xs line-through decoration-gray-300 block mb-0.5">
-                                                        R$ {Number(car.preco).toLocaleString('pt-BR')}
-                                                    </span>
-                                                    <div className="flex items-center gap-2">
-                                                        <div className="text-base md:text-2xl font-black" style={{ color: "var(--color-brand)" }}>
-                                                            R$ {Number(car.preco_promocional).toLocaleString('pt-BR')}
-                                                        </div>
-                                                        <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                                                            Oferta
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-base md:text-2xl font-black" style={{ color: "var(--color-brand)" }}>
+                                        {/* Preço Destacado */}
+                                        {car.preco_promocional > 0 ? (
+                                            <div className="flex flex-col">
+                                                <span className="text-gray-400 text-xs font-semibold line-through decoration-gray-300 block mb-0.5">
                                                     R$ {Number(car.preco).toLocaleString('pt-BR')}
+                                                </span>
+                                                <div className="flex items-center gap-2">
+                                                    <div className="text-2xl font-black text-red-600">
+                                                        R$ {Number(car.preco_promocional).toLocaleString('pt-BR')}
+                                                    </div>
+                                                    <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                                        Oferta
+                                                    </span>
                                                 </div>
-                                            )}
-                                        </Link>
+                                            </div>
+                                        ) : (
+                                            <div className="text-2xl font-black text-red-600">
+                                                R$ {Number(car.preco).toLocaleString('pt-BR')}
+                                            </div>
+                                        )}
 
-                                        {/* Botões: Lado-a-lado Mobile e Desktop */}
-                                        <div className="grid grid-cols-2 gap-1.5 md:gap-2 w-full mt-2">
-                                            <button className="py-2 px-1 rounded-lg border border-gray-200 bg-gray-50 text-gray-700 font-bold text-[10px] md:text-xs hover:bg-gray-100 transition-colors flex items-center justify-center truncate">
-                                                <span className="hidden md:inline">Ver parcelas</span>
-                                                <span className="md:hidden">Financiar</span>
-                                            </button>
-                                            <a
-                                                href={`https://wa.me/55${loja?.dados_contato?.whatsapp ? loja.dados_contato.whatsapp.replace(/\D/g, '') : ''}?text=${encodeURIComponent(`Olá! Vi o ${car.marca} ${car.modelo} (${car.ano_fabricacao}/${car.ano_modelo}) no site e gostaria de mais informações.`)}`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="py-2 px-1 rounded-lg text-white font-bold text-[10px] md:text-xs transition-colors flex items-center justify-center gap-1.5 truncate shadow-sm hover:shadow"
-                                                style={{ backgroundColor: "var(--color-brand)" }}
-                                            >
-                                                <MessageCircle size={14} className="shrink-0" />
-                                                <span className="truncate">Vendedor</span>
-                                            </a>
-                                        </div>
+                                        {/* Localização */}
+                                        {(car.municipio || car.uf) && (
+                                            <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-2 truncate">
+                                                <MapPin size={12} className="shrink-0" />
+                                                <span>{car.municipio}{car.municipio && car.uf ? ' - ' : ''}{car.uf}</span>
+                                            </div>
+                                        )}
+                                    </Link>
+
+                                    {/* Botões: Base do Card */}
+                                    <div className="w-full mt-4 pt-4 border-t border-gray-100">
+                                        <a
+                                            href={`https://wa.me/55${loja?.dados_contato?.whatsapp ? loja.dados_contato.whatsapp.replace(/\D/g, '') : ''}?text=${encodeURIComponent(`Olá! Vi o ${car.marca} ${car.modelo} (${car.ano_fabricacao}/${car.ano_modelo}) no site e gostaria de mais informações.`)}`}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="w-full py-3 px-4 rounded-xl text-white font-bold text-sm md:text-base transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 bg-[#25D366] hover:bg-[#1DA851]"
+                                        >
+                                            <MessageCircle size={18} className="shrink-0" />
+                                            <span>Falar no WhatsApp</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

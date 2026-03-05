@@ -21,6 +21,7 @@ export default function VeiculoFormClient() {
     const [km, setKm] = useState('')
     const [cor, setCor] = useState('')
     const [combustivel, setCombustivel] = useState('')
+    const [cambio, setCambio] = useState('')
     const [chassi, setChassi] = useState('')
     const [renavam, setRenavam] = useState('')
     const [placa, setPlaca] = useState('')
@@ -56,6 +57,7 @@ export default function VeiculoFormClient() {
             setAnoMod(carro.anoModelo || '')
             setCor(carro.cor || '')
             setCombustivel(carro.combustivel || '')
+            setCambio(carro.cambio || '')
             setChassi(carro.chassi || '')
             setRenavam(carro.renavam || '')
             setPlaca(carro.placa || placaInput)
@@ -117,6 +119,7 @@ export default function VeiculoFormClient() {
             setKm('')
             setCor('')
             setCombustivel('')
+            setCambio('')
             setChassi('')
             setRenavam('')
             setPlaca('')
@@ -204,6 +207,18 @@ export default function VeiculoFormClient() {
                 <div className="space-y-1">
                     <label className="text-xs font-medium text-zinc-400">Combustível</label>
                     <input name="combustivel" value={combustivel} onChange={e => setCombustivel(e.target.value)} placeholder="Ex: Flex" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="text-xs font-medium text-zinc-400">Câmbio</label>
+                    <select name="cambio" value={cambio} onChange={e => setCambio(e.target.value)} className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white">
+                        <option value="">Selecione...</option>
+                        <option value="Manual">Manual</option>
+                        <option value="Automático">Automático</option>
+                        <option value="CVT">CVT</option>
+                        <option value="Automatizado">Automatizado</option>
+                        <option value="Semi-automático">Semi-automático</option>
+                    </select>
                 </div>
 
                 <div className="space-y-1">
