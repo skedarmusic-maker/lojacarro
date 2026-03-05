@@ -217,7 +217,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                             <div key={car.id} className="bg-white rounded-xl overflow-hidden border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all group flex flex-col shadow-sm">
 
                                 {/* Thumbnail: Topo do Card (Mobile e Desktop) com proporção controlada */}
-                                <div className="w-full aspect-[4/3] shrink-0 bg-gray-100 block overflow-hidden relative">
+                                <div className="w-full aspect-[3/2] shrink-0 bg-gray-100 block overflow-hidden relative">
                                     <Link href={`/${tenantId}/v/${car.id}`} className="absolute inset-0 z-10">
                                         <VehicleImageSlider
                                             images={car.imagens || []}
@@ -228,7 +228,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                                 </div>
 
                                 {/* Info Box: Base do Container */}
-                                <div className="p-4 flex-1 flex flex-col">
+                                <div className="p-3 md:p-4 flex-1 flex flex-col">
                                     <Link href={`/${tenantId}/v/${car.id}`} className="block flex-1">
                                         {/* Linha 1: Marca + Modelo */}
                                         <h3 className="text-base font-bold text-gray-900 leading-tight group-hover:text-[var(--color-brand)] transition-colors line-clamp-2 uppercase">
@@ -276,7 +276,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                                     </Link>
 
                                     {/* Botões: Base do Card */}
-                                    <div className="w-full mt-4 pt-4 border-t border-gray-100">
+                                    <div className="w-full mt-3 pt-3 border-t border-gray-100">
                                         <a
                                             href={`https://wa.me/55${loja?.dados_contato?.whatsapp ? loja.dados_contato.whatsapp.replace(/\D/g, '') : ''}?text=${encodeURIComponent(`Olá! Vi o ${car.marca} ${car.modelo} (${car.ano_fabricacao}/${car.ano_modelo}) no site e gostaria de mais informações.`)}`}
                                             target="_blank"
