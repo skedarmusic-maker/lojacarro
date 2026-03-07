@@ -9,7 +9,7 @@ import StorefrontHeader from '../../StorefrontHeader'
 import FinancingModalClient from './FinancingModalClient'
 import VehicleGallery from './VehicleGallery'
 import { formatCurrency } from '@/lib/utils'
-import { registrarPageView } from '../actions/analytics'
+import { registrarPageView } from '../../actions/analytics'
 import LeadFormClient from './LeadFormClient'
 
 type CarPageProps = {
