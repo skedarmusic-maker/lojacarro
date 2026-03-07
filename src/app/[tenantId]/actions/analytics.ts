@@ -49,7 +49,7 @@ export async function registrarLead(
     dados?: {
         veiculo_id?: string,
         nome_cliente?: string,
-        telefone_contato?: string[instructional],
+        telefone_contato?: string,
         mensagem?: string
     }
 ) {
