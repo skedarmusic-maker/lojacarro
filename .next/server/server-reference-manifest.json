@@ -57,10 +57,15 @@
         "app/admin/estoque/page": {
           "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5CinstagramService.ts%22%2C%5B%7B%22id%22%3A%2270bab13a1f15a5db391bcdac20b590891d31b87999%22%2C%22exportedName%22%3A%22publishToInstagramService%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5CinstagramService.ts%22%7D%5D%5D%2C%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5Cactions.ts%22%2C%5B%7B%22id%22%3A%224005dbae34966db44f138fe16827c652f05d78031a%22%2C%22exportedName%22%3A%22deleteVeiculo%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%22401891a2196f278c1c99c09dac37e344d5f0daa559%22%2C%22exportedName%22%3A%22submitNovoVeiculo%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5Cactions.ts%22%7D%2C%7B%22id%22%3A%22405cb770387e921559815b7d06ed813bd76bf38455%22%2C%22exportedName%22%3A%22fetchPlacaFipe%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5Cactions.ts%22%7D%5D%5D%5D&__client_imported__=true!",
           "async": false
+        },
+        "app/admin/estoque/[veiculoId]/page": {
+          "moduleId": "(action-browser)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5CinstagramService.ts%22%2C%5B%7B%22id%22%3A%2270bab13a1f15a5db391bcdac20b590891d31b87999%22%2C%22exportedName%22%3A%22publishToInstagramService%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5CinstagramService.ts%22%7D%5D%5D%5D&__client_imported__=true!",
+          "async": false
         }
       },
       "layer": {
-        "app/admin/estoque/page": "action-browser"
+        "app/admin/estoque/page": "action-browser",
+        "app/admin/estoque/[veiculoId]/page": "action-browser"
       },
       "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\admin\\estoque\\instagramService.ts",
       "exportedName": "publishToInstagramService"
@@ -103,6 +108,58 @@
       },
       "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\admin\\estoque\\actions.ts",
       "exportedName": "fetchPlacaFipe"
+    },
+    "60438c919a86c1d31f15fadc810f3c564b7e27448a": {
+      "workers": {
+        "app/admin/estoque/[veiculoId]/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5C%5BveiculoId%5D%5C%5Cpage.tsx%22%2C%5B%7B%22id%22%3A%2260438c919a86c1d31f15fadc810f3c564b7e27448a%22%2C%22exportedName%22%3A%22%24%24RSC_SERVER_ACTION_0%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cestoque%5C%5C%5BveiculoId%5D%5C%5Cpage.tsx%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/estoque/[veiculoId]/page": "rsc"
+      },
+      "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\admin\\estoque\\[veiculoId]\\page.tsx",
+      "exportedName": "$$RSC_SERVER_ACTION_0"
+    },
+    "606f1248e2656348fa011d557fe46b48000e3b108f": {
+      "workers": {
+        "app/admin/config/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cconfig%5C%5Cpage.tsx%22%2C%5B%7B%22id%22%3A%22606f1248e2656348fa011d557fe46b48000e3b108f%22%2C%22exportedName%22%3A%22%24%24RSC_SERVER_ACTION_0%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5Cadmin%5C%5Cconfig%5C%5Cpage.tsx%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/admin/config/page": "rsc"
+      },
+      "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\admin\\config\\page.tsx",
+      "exportedName": "$$RSC_SERVER_ACTION_0"
+    },
+    "70562ae80375775da98077696db1cbdc953a38cccf": {
+      "workers": {
+        "app/[tenantId]/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%2C%5B%7B%22id%22%3A%2270562ae80375775da98077696db1cbdc953a38cccf%22%2C%22exportedName%22%3A%22registrarLead%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%7D%2C%7B%22id%22%3A%227834a18b9977277c950de53d2ac83f52d34bacabe2%22%2C%22exportedName%22%3A%22registrarPageView%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/[tenantId]/page": "rsc"
+      },
+      "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\[tenantId]\\actions\\analytics.ts",
+      "exportedName": "registrarLead"
+    },
+    "7834a18b9977277c950de53d2ac83f52d34bacabe2": {
+      "workers": {
+        "app/[tenantId]/page": {
+          "moduleId": "(rsc)/./node_modules/next/dist/build/webpack/loaders/next-flight-action-entry-loader.js?actions=%5B%5B%22C%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%2C%5B%7B%22id%22%3A%2270562ae80375775da98077696db1cbdc953a38cccf%22%2C%22exportedName%22%3A%22registrarLead%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%7D%2C%7B%22id%22%3A%227834a18b9977277c950de53d2ac83f52d34bacabe2%22%2C%22exportedName%22%3A%22registrarPageView%22%2C%22filename%22%3A%22..%2FC%3A%5C%5CUsers%5C%5CSkedar%5C%5CDesktop%5C%5CIA%20-%20SITES%5C%5CPROJETO%20CARRO%5C%5Csrc%5C%5Capp%5C%5C%5BtenantId%5D%5C%5Cactions%5C%5Canalytics.ts%22%7D%5D%5D%5D&__client_imported__=!",
+          "async": false
+        }
+      },
+      "layer": {
+        "app/[tenantId]/page": "rsc"
+      },
+      "filename": "../C:\\Users\\Skedar\\Desktop\\IA - SITES\\PROJETO CARRO\\src\\app\\[tenantId]\\actions\\analytics.ts",
+      "exportedName": "registrarPageView"
     }
   },
   "edge": {},

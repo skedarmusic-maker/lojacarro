@@ -34,9 +34,44 @@ export default async function ConfigPage() {
 
         // Na fase 3, implementar upload real do logo para o bucket 'logos' e pegar a URL. Algumas validações extras aqui
 
+        // Upload de Banners do Hero Carousel
+        let bannersArr = loja?.config_visual?.banners_home || []
+        const removerBanners = formData.get('remover_banners')
+        if (removerBanners === 'true') {
+            bannersArr = []
+        } else {
+            const inputBanners = formData.getAll('banners_home') as File[]
+            const validBanners = inputBanners.filter(f => f.size > 0).slice(0, 5)
+
+            if (validBanners.length > 0) {
+                const uploadPromises = validBanners.map(async (foto) => {
+                    const ext = foto.name.split('.').pop()
+                    const fileName = `loja-${loja?.id}-banner-${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`
+                    const buffer = Buffer.from(await foto.arrayBuffer())
+
+                    const { data: uploadData, error: uploadError } = await supabase.storage
+                        .from('logos')
+                        .upload(fileName, buffer, {
+                            contentType: foto.type,
+                            upsert: true
+                        })
+
+                    if (!uploadError && uploadData) {
+                        const { data } = supabase.storage.from('logos').getPublicUrl(fileName)
+                        return data.publicUrl
+                    }
+                    return null
+                })
+
+                const uploadedUrls = await Promise.all(uploadPromises)
+                bannersArr = uploadedUrls.filter(url => url !== null)
+            }
+        }
+
         const cores = {
             cor_primaria: formData.get('cor_primaria') as string,
-            logo_url: loja?.config_visual?.logo_url || null // mantem a atual se não mudar
+            logo_url: loja?.config_visual?.logo_url || null, // mantem a atual se não mudar
+            banners_home: bannersArr
         }
 
         let imagem_sobre_url = loja?.imagem_sobre || null
@@ -175,6 +210,44 @@ export default async function ConfigPage() {
                                         <label className="text-sm font-medium text-zinc-300">Logotipo (Em breve)</label>
                                         <div className="border border-dashed border-zinc-700 rounded-md h-24 flex items-center justify-center text-zinc-500 text-xs bg-zinc-900/50">
                                             O upload de Logo estará disponível após integração com Supabase Storage.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* NOVA SEÇÃO: BANNERS DO HERO */}
+                            <div className="pt-8 mt-8 border-t border-zinc-800/50">
+                                <h3 className="text-md font-medium text-zinc-200 mb-6 border-b border-zinc-800/50 pb-2">Banners da Vitrine (Carrossel Inicial)</h3>
+
+                                <div className="space-y-4 mb-6">
+                                    <label className="text-sm font-medium text-zinc-300">Upload de Banners (Até 5 fotos)</label>
+
+                                    {/* Preview dos banners atuais */}
+                                    {loja?.config_visual?.banners_home && loja.config_visual.banners_home.length > 0 && (
+                                        <div className="flex gap-2 mb-4 overflow-x-auto pb-2 shrink-0">
+                                            {loja.config_visual.banners_home.map((bannerUrl: string, idx: number) => (
+                                                <div key={idx} className="w-48 h-24 rounded border border-zinc-800 shrink-0 overflow-hidden relative group bg-black">
+                                                    <img src={bannerUrl} className="w-full h-full object-cover" alt={`Banner ${idx}`} />
+                                                    <div className="absolute top-1 left-2 bg-black/60 px-2 rounded font-bold text-xs text-white"># {idx + 1}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    <div className="flex flex-col sm:flex-row gap-4">
+                                        <div className="flex-1">
+                                            <input type="file" name="banners_home" multiple accept="image/*" className="w-full text-sm text-zinc-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-zinc-800 file:text-zinc-300 hover:file:bg-zinc-700 bg-zinc-900/50 border border-zinc-800 rounded-md cursor-pointer" />
+                                            <p className="text-xs text-zinc-500 mt-2">
+                                                Envie de <strong className="text-emerald-400">1 a 5 fotos</strong> para rotacionar na tela inicial. As imagens novas substituirão as antigas.
+                                                <br />Tamanho desktop recomendado: <strong className="text-emerald-400 text-[11px] font-mono whitespace-nowrap bg-zinc-800 px-1 py-0.5 rounded">1920x600px</strong> (Formato Horizontal/Paisagem longa).
+                                            </p>
+
+                                            {loja?.config_visual?.banners_home?.length > 0 && (
+                                                <label className="flex items-center gap-2 mt-4 cursor-pointer">
+                                                    <input type="checkbox" name="remover_banners" value="true" className="rounded border-zinc-700 bg-zinc-900 text-red-500 focus:ring-red-500 w-4 h-4 cursor-pointer" />
+                                                    <span className="text-xs text-red-400 font-medium">Resetar e remover todos os meus banners (voltar para imagens genéricas de Padrão do Sistema).</span>
+                                                </label>
+                                            )}
                                         </div>
                                     </div>
                                 </div>

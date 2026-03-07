@@ -10,12 +10,13 @@ interface StorefrontCategoriesProps {
 export default function StorefrontCategories({ basePath, availableCategories, categoriaCount, activeCategory }: StorefrontCategoriesProps) {
     // Mock das imagens de categoria (em um projeto real poderíamos salvar no storage)
     const categoryImages: Record<string, string> = {
-        'Carros elétricos': 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=500&auto=format&fit=crop&q=60',
-        'Hatches': 'https://images.unsplash.com/photo-1512749454157-550ffdae605d?w=500&auto=format&fit=crop&q=60',
-        'Picapes': 'https://images.unsplash.com/photo-1559404288-66f81078d101?w=500&auto=format&fit=crop&q=60',
-        'Sedans': 'https://images.unsplash.com/photo-1550355291-bbee04a92027?w=500&auto=format&fit=crop&q=60',
-        'SUVs': 'https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=500&auto=format&fit=crop&q=60',
-        'Outros': 'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=500&auto=format&fit=crop&q=60'
+        'Carros elétricos': 'https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=500&auto=format&fit=crop&q=60', // Manter por enquanto ou usar uma genérica
+        'Hatches': '/images/hatch.webp',
+        'Picapes': '/images/pickup.jfif',
+        'Sedans': '/images/sedan.webp',
+        'SUVs': '/images/suv.jpg',
+        'Minivans': '/images/minivan.webp',
+        'Outros': '/images/minivan.webp' // Usando minivan como fallback bonitinho
     }
 
     if (!availableCategories || availableCategories.length === 0) {
@@ -26,7 +27,7 @@ export default function StorefrontCategories({ basePath, availableCategories, ca
         <section className="py-12 border-b border-gray-200 bg-gray-50">
             <div className="max-w-[1440px] mx-auto px-4 overflow-hidden">
                 <h3 className="text-gray-600 font-bold mb-6">Categorias</h3>
-                <div className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x snap-mandatory hide-scrollbars touch-pan-x animate-hint-swipe">
+                <div className="flex overflow-x-auto gap-4 pb-6 pt-2 snap-x snap-mandatory hide-scrollbars animate-hint-swipe">
                     {availableCategories.map(categoria => (
                         <Link
                             key={categoria}
@@ -37,7 +38,7 @@ export default function StorefrontCategories({ basePath, availableCategories, ca
                             <img
                                 src={categoryImages[categoria] || categoryImages['Outros']}
                                 alt={categoria}
-                                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity"
+                                className={`absolute inset-0 w-full h-full object-contain p-1 opacity-80 group-hover:opacity-100 transition-opacity ${categoria === 'Sedans' ? 'scale-[1.6]' : ''}`}
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/90 via-gray-900/40 to-transparent flex items-end p-4">
                                 <div>

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import InstagramPublishButton from './InstagramPublishButton'
 import { deleteVeiculo } from './actions'
+import { formatCurrency } from '@/lib/utils'
 type Veiculo = any // Simplificação, usar type real depois
 type LojistaType = any // Simplificação
 
@@ -78,16 +79,16 @@ export default function AdminVeiculoCard({ veiculo, lojaId }: { veiculo: Veiculo
                             {emPromocao ? (
                                 <>
                                     <div className="text-zinc-500 text-xs line-through">
-                                        R$ {Number(veiculo.preco).toLocaleString('pt-BR')}
+                                        {formatCurrency(veiculo.preco)}
                                     </div>
                                     <div className="text-emerald-500 font-bold text-lg leading-tight">
-                                        R$ {precoPromo ? Number(precoPromo).toLocaleString('pt-BR') : '...'}
+                                        {precoPromo ? formatCurrency(precoPromo) : '...'}
                                     </div>
                                     <span className="text-[10px] uppercase tracking-wider text-emerald-600/50 bg-emerald-950/30 px-1 rounded inline-block">OFERTA</span>
                                 </>
                             ) : (
                                 <div className="text-zinc-300 font-bold text-lg">
-                                    R$ {Number(veiculo.preco).toLocaleString('pt-BR')}
+                                    {formatCurrency(veiculo.preco)}
                                 </div>
                             )}
                         </div>

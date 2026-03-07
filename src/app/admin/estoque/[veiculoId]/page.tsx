@@ -73,7 +73,17 @@ export default async function EditarVeiculoPage({ params }: PageProps) {
             categoria: formData.get('categoria') as string || 'Outros',
             descricao: formData.get('descricao') as string,
             status: formData.get('status') as string,
-            imagens: imagens
+            imagens: imagens,
+            cor: formData.get('cor') as string,
+            combustivel: formData.get('combustivel') as string,
+            cambio: formData.get('cambio') as string,
+            placa: formData.get('placa') as string,
+            chassi: formData.get('chassi') as string,
+            renavam: formData.get('renavam') as string,
+            municipio: formData.get('municipio') as string,
+            uf: formData.get('uf') as string,
+            potencia: formData.get('potencia') as string,
+            cilindradas: formData.get('cilindradas') as string
         }
 
         const { error } = await supabase
@@ -172,6 +182,60 @@ export default async function EditarVeiculoPage({ params }: PageProps) {
                                         <option value="vendido">Vendido</option>
                                         <option value="oculto">Oculto</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Cor</label>
+                                    <input name="cor" defaultValue={veiculo.cor} placeholder="Ex: Branco" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Combustível</label>
+                                    <input name="combustivel" defaultValue={veiculo.combustivel} placeholder="Ex: Flex" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Câmbio</label>
+                                    <select name="cambio" defaultValue={veiculo.cambio} className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all">
+                                        <option value="">Selecione...</option>
+                                        <option value="Manual">Manual</option>
+                                        <option value="Automático">Automático</option>
+                                        <option value="CVT">CVT</option>
+                                        <option value="Automatizado">Automatizado</option>
+                                        <option value="Semi-automático">Semi-automático</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Placa</label>
+                                    <input name="placa" defaultValue={veiculo.placa} placeholder="ABC1D23" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Chassi</label>
+                                    <input name="chassi" defaultValue={veiculo.chassi} placeholder="Número do Chassi" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Renavam</label>
+                                    <input name="renavam" defaultValue={veiculo.renavam} placeholder="Número do Renavam" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Cidade/UF</label>
+                                    <div className="flex gap-2">
+                                        <input name="municipio" defaultValue={veiculo.municipio} placeholder="Cidade" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                        <input name="uf" defaultValue={veiculo.uf} maxLength={2} placeholder="UF" className="w-20 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white text-center focus:border-blue-500 outline-none transition-all uppercase" />
+                                    </div>
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs font-bold uppercase tracking-wider text-zinc-500">Potência (cv) / CC</label>
+                                    <div className="flex gap-2">
+                                        <input name="potencia" defaultValue={veiculo.potencia} placeholder="Potência" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                        <input name="cilindradas" defaultValue={veiculo.cilindradas} placeholder="CC" className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-white focus:border-blue-500 outline-none transition-all" />
+                                    </div>
                                 </div>
                             </div>
 

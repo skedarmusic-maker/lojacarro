@@ -12,6 +12,8 @@ import VehicleImageSlider from './VehicleImageSlider'
 import StorefrontFooter from './StorefrontFooter'
 import StorefrontCategories from './StorefrontCategories'
 import FavoriteButton from './FavoriteButton'
+import { formatCurrency } from '@/lib/utils'
+import { registrarPageView } from './actions/analytics'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -114,7 +116,8 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
 
     const corPrimaria = loja.config_visual?.cor_primaria || '#3b82f6'
 
-
+    // Resgistra Analytics silencioso no Node.js
+    registrarPageView(loja.id, tenantId, 'vitrine');
 
     // Array estático de logos suportados em /public/images/
     const supportedBrandLogos = [
@@ -143,7 +146,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
             />
 
             {/* Hero Banner Dinâmico Premium */}
-            <HeroCarousel lojaNome={loja.nome} corPrimaria={corPrimaria} />
+            <HeroCarousel lojaNome={loja.nome} corPrimaria={corPrimaria} banners={loja.config_visual?.banners_home} />
 
             {/* Descubra por Marca Section */}
             {activeBrandLogos.length > 0 && (
@@ -162,7 +165,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                                 </Link>
                             )}
                         </div>
-                        <div className="flex overflow-x-auto gap-4 md:gap-8 pb-4 pt-2 snap-x snap-mandatory hide-scrollbars touch-pan-x">
+                        <div className="flex overflow-x-auto gap-4 md:gap-8 pb-4 pt-2 snap-x snap-mandatory hide-scrollbars">
                             {activeBrandLogos.map(m => (
                                 <Link
                                     key={m}
@@ -230,49 +233,83 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                                 {/* Info Box: Base do Container */}
                                 <div className="p-3 md:p-4 flex-1 flex flex-col">
                                     <Link href={`/${tenantId}/v/${car.id}`} className="block flex-1">
-                                        {/* Linha 1: Marca + Modelo */}
-                                        <h3 className="text-base font-bold text-gray-900 leading-tight group-hover:text-[var(--color-brand)] transition-colors line-clamp-2 uppercase">
-                                            {car.marca} {car.modelo}
-                                        </h3>
+                                        {(() => {
+                                            const modeloStr = car.modelo || '';
+                                            const modeloParts = modeloStr.split(' ');
+                                            const modeloPrincipal = modeloParts[0] || '';
+                                            const modeloResto = modeloParts.slice(1).join(' ').toLowerCase();
 
-                                        {/* Linha 2: Ano • Quilometragem */}
-                                        <div className="text-sm font-medium text-gray-600 mt-1">
-                                            {car.ano_fabricacao}/{car.ano_modelo} &bull; {car.quilometragem.toLocaleString('pt-BR')} km
-                                        </div>
+                                            const versaoFinal = modeloResto;
 
-                                        {/* Linha 3: Combustível • Câmbio */}
-                                        <div className="text-xs font-medium text-gray-500 mt-0.5 mb-3 truncate">
-                                            {car.combustivel || 'Flex'} {car.cambio ? `• ${car.cambio}` : ''}
-                                        </div>
-
-                                        {/* Preço Destacado */}
-                                        {car.preco_promocional > 0 ? (
-                                            <div className="flex flex-col">
-                                                <span className="text-gray-400 text-xs font-semibold line-through decoration-gray-300 block mb-0.5">
-                                                    R$ {Number(car.preco).toLocaleString('pt-BR')}
-                                                </span>
-                                                <div className="flex items-center gap-2">
-                                                    <div className="text-2xl font-black text-red-600">
-                                                        R$ {Number(car.preco_promocional).toLocaleString('pt-BR')}
+                                            return (
+                                                <>
+                                                    {/* Linha 1: Marca + Modelo Principal */}
+                                                    <h3 className="text-[17px] font-bold text-[#333333] tracking-tight leading-tight transition-colors uppercase">
+                                                        {car.marca} {modeloPrincipal}
+                                                    </h3>
+                                                    {/* Linha 2: Versão + Dados Técnicos (Estilo Webmotors) */}
+                                                    <div className="text-[13px] text-[#818085] mt-1 line-clamp-2 capitalize leading-relaxed min-h-[40px]">
+                                                        {versaoFinal}
                                                     </div>
-                                                    <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
-                                                        Oferta
-                                                    </span>
-                                                </div>
+                                                </>
+                                            )
+                                        })()}
+
+                                        {/* Linha 3: Ano e KM com ícones (Cinza mais claro) */}
+                                        <div className="flex items-center gap-4 text-[13px] text-[#818085] mt-2">
+                                            <div className="flex items-center gap-1.5">
+                                                <Calendar size={15} className="text-[#b1b1b4]" />
+                                                <span>{car.ano_fabricacao}/{car.ano_modelo}</span>
                                             </div>
-                                        ) : (
-                                            <div className="text-2xl font-black text-red-600">
-                                                R$ {Number(car.preco).toLocaleString('pt-BR')}
+                                            <div className="flex items-center gap-1.5">
+                                                <Gauge size={15} className="text-[#b1b1b4]" />
+                                                <span>{car.quilometragem.toLocaleString('pt-BR')} Km</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Linha 4: Localização */}
+                                        {(car.municipio || car.uf) && (
+                                            <div className="flex items-center gap-1.5 text-[13px] text-[#818085] mt-2 mb-1">
+                                                <MapPin size={15} className="text-[#b1b1b4]" />
+                                                <span className="capitalize">{car.municipio ? `${car.municipio.toLowerCase()} ` : ''}{car.uf ? `(${car.uf.toUpperCase()})` : ''}</span>
                                             </div>
                                         )}
 
-                                        {/* Localização */}
-                                        {(car.municipio || car.uf) && (
-                                            <div className="flex items-center gap-1 text-[10px] text-gray-400 mt-2 truncate">
-                                                <MapPin size={12} className="shrink-0" />
-                                                <span>{car.municipio}{car.municipio && car.uf ? ' - ' : ''}{car.uf}</span>
-                                            </div>
-                                        )}
+                                        {/* Linha 5: Preço */}
+                                        {(() => {
+                                            const precoFinal = car.preco_promocional > 0 ? Number(car.preco_promocional) : Number(car.preco);
+                                            const isAbaixoFipe = car.preco_fipe && precoFinal < Number(car.preco_fipe) && precoFinal > 0;
+
+                                            return (
+                                                <div className="mt-4 mb-2">
+                                                    {car.preco_promocional > 0 && (
+                                                        <span className="text-zinc-400 text-xs font-semibold line-through block mb-0.5">
+                                                            {formatCurrency(car.preco)}
+                                                        </span>
+                                                    )}
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <div className="text-[22px] font-bold tracking-tight text-[#333333] leading-none">
+                                                            {formatCurrency(precoFinal)}
+                                                        </div>
+                                                        {car.preco_promocional > 0 && (
+                                                            <span className="bg-emerald-50 text-emerald-600 border border-emerald-200 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">
+                                                                Oferta
+                                                            </span>
+                                                        )}
+                                                        {isAbaixoFipe && (
+                                                            <span className="bg-[#198b5a] text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full whitespace-nowrap hidden lg:block xl:block">
+                                                                ABAIXO DA FIPE
+                                                            </span>
+                                                        )}
+                                                        {isAbaixoFipe && (
+                                                            <span className="bg-[#198b5a] text-white text-[10px] uppercase font-bold px-2 py-0.5 rounded-full whitespace-nowrap lg:hidden xl:hidden block">
+                                                                DA FIPE
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )
+                                        })()}
                                     </Link>
 
                                     {/* Botões: Base do Card */}
@@ -281,7 +318,7 @@ export default async function TenantShowroom({ params, searchParams }: TenantPag
                                             href={`https://wa.me/55${loja?.dados_contato?.whatsapp ? loja.dados_contato.whatsapp.replace(/\D/g, '') : ''}?text=${encodeURIComponent(`Olá! Vi o ${car.marca} ${car.modelo} (${car.ano_fabricacao}/${car.ano_modelo}) no site e gostaria de mais informações.`)}`}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="w-full py-3 px-4 rounded-xl text-white font-bold text-sm md:text-base transition-all flex items-center justify-center gap-2 shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-95 bg-[#25D366] hover:bg-[#1DA851]"
+                                            className="w-full py-3.5 px-4 rounded-xl text-white font-semibold tracking-wide text-[15px] transition-colors flex items-center justify-center gap-2 active:scale-[0.98] bg-[#22c55e] hover:bg-[#16a34a]"
                                         >
                                             <MessageCircle size={18} className="shrink-0" />
                                             <span>Falar no WhatsApp</span>

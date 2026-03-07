@@ -119,57 +119,71 @@ export async function fetchPlacaFipe(placa: string) {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    tipo: 'agregados-basica',
+                    tipo: 'fipe-chassi',
                     placa: placa.replace('-', '').toUpperCase(),
-                    homolog: false // Modo de busca real (requer saldo na APIBrasil)
+                    homolog: false
                 })
             });
 
             const result = await res.json();
-            console.log('Status da Resposta APIBrasil:', res.status);
-            console.log('Erro na Resposta APIBrasil:', result.error);
 
-            if (!result.error && result.data) {
-                const d = result.data;
+            // Verificar se retornou sem erro e possui o array de resultados
+            if (!result.error && result.data && result.data.resultados && result.data.resultados.length > 0) {
+                // Pegar o primeiro resultado de fipe-chassi
+                const d = result.data.resultados[0];
 
-                // No 'agregados-basica', fabricante e modelo vem separados
-                let marca = d.fabricante || '';
+                let marca = d.marca || '';
                 let modelo = d.modelo || '';
 
-                // Fallback caso venha no formato antigo 'modelo_marca' (MARCA/MODELO)
-                if (!marca && d.modelo_marca) {
-                    const parts = (d.modelo_marca || '').split('/');
-                    marca = parts[0] || '';
-                    modelo = parts[1] || parts[0] || '';
+                // Inferir câmbio a partir do texto do modelo (já que fipe-chassi puro costuma não ter campo isolado de câmbio)
+                let cambioExtraido = '';
+                const modeloUpper = modelo.toUpperCase();
+                if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) {
+                    cambioExtraido = 'Automático';
+                } else if (modeloUpper.includes(' CVT ')) {
+                    cambioExtraido = 'CVT';
+                } else if (modeloUpper.includes(' MANUAL ')) {
+                    cambioExtraido = 'Manual';
                 }
 
-                console.log('Dados mapeados:', marca, modelo);
+                // Tentar extrair cilindradas direto do nome do modelo (ex: "Aurora LX 1.6 Flex")
+                let cilindradasFormatadas = '';
+                const ccMatch = modeloUpper.match(/(\d\.\d)/);
+                if (ccMatch && ccMatch[1]) {
+                    cilindradasFormatadas = ccMatch[1];
+                }
+
+                // Resgatar o combustível formatado se existir no campo extra
+                let combustivel = d.combustivel || '';
+                if (d.extra?.combustivel?.descricao) {
+                    combustivel = d.extra.combustivel.descricao;
+                }
 
                 return {
                     data: {
                         marca: marca.toString().trim().toUpperCase(),
                         modelo: modelo.toString().trim().toUpperCase(),
-                        anoFabricacao: d.ano_fabricacao || d.ano || '',
-                        anoModelo: d.ano_modelo || d.ano || '',
+                        anoFabricacao: d.anoFabricacao || '',
+                        anoModelo: d.anoModelo || '',
                         cor: d.cor || '',
-                        combustivel: d.combustivel || '',
-                        cambio: d.cambio || '',
+                        combustivel: combustivel.toUpperCase(),
+                        cambio: cambioExtraido,
                         chassi: d.chassi || '',
-                        renavam: d.renavam || '',
-                        placa: d.placa || '',
-                        potencia: d.potencia || '',
-                        cilindradas: d.cilindradas || '',
-                        municipio: d.cidade || d.municipio || '',
-                        uf: d.uf_jurisdicao || d.uf || '',
-                        preco_fipe: 0
+                        renavam: '',
+                        placa: placa.toUpperCase(),
+                        potencia: '',
+                        cilindradas: cilindradasFormatadas,
+                        municipio: '', // fipe-chassi geralmente não traz local
+                        uf: '',
+                        preco_fipe: d.valor || 0 // esse endpoint traz o valor de mercado (FIPE)
                     }
                 }
             }
 
-            console.log('Aviso/Erro APIBrasil:', result.message || 'Sem mensagem de retorno');
+            console.log('Aviso APIBrasil:', result.message || 'Sem retorno de dados');
 
         } catch (e) {
-            console.error('Erro de conexão/parse APIBrasil:', e);
+            console.error('Erro APIBrasil:', e);
         }
     }
 
@@ -249,6 +263,7 @@ export async function submitNovoVeiculo(formData: FormData) {
         ano_fabricacao: Number(formData.get('ano_fabricacao')),
         ano_modelo: Number(formData.get('ano_modelo')),
         preco: Number(formData.get('preco')),
+        preco_fipe: Number(formData.get('preco_fipe')) || 0,
         quilometragem: Number(formData.get('km')) || 0,
         categoria: formData.get('categoria') as string || 'Outros',
         cor: formData.get('cor') as string,

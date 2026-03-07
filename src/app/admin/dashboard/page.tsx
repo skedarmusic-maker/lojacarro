@@ -44,6 +44,18 @@ export default async function AdminDashboard() {
         .select('*', { count: 'exact', head: true })
         .eq('loja_id', loja?.id)
 
+    // Buscar Analytics Básico: Acessos Gerais na quinzena/mês (Simplificado pro MVP)
+    const { count: totalAcessos } = await supabase
+        .from('page_views')
+        .select('*', { count: 'exact', head: true })
+        .eq('loja_id', loja?.id)
+
+    // Buscar Leads totais recebidos na plataforma
+    const { count: totalLeads } = await supabase
+        .from('leads')
+        .select('*', { count: 'exact', head: true })
+        .eq('loja_id', loja?.id)
+
     return (
         <div className="min-h-screen bg-zinc-950 text-white font-sans flex text-sm">
 
@@ -96,13 +108,21 @@ export default async function AdminDashboard() {
                             <h3 className="text-zinc-400 font-medium mb-2">Veículos no Estoque</h3>
                             <p className="text-4xl font-black">{totalVeiculos || 0}</p>
                         </div>
-                        <div className="bg-[#141414] border border-zinc-800 rounded-xl p-6">
-                            <h3 className="text-zinc-400 font-medium mb-2">Acessos à Vitrine</h3>
-                            <p className="text-4xl font-black">0</p>
+                        <div className="bg-[#141414] border border-zinc-800 rounded-xl p-6 group hover:border-[var(--color-brand)] transition-colors">
+                            <h3 className="text-zinc-400 font-medium mb-2 flex items-center justify-between">
+                                Acessos à Vitrine
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600 group-hover:text-[var(--color-brand)] transition-colors"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></svg>
+                            </h3>
+                            <p className="text-4xl font-black">{totalAcessos || 0}</p>
+                            <span className="text-xs text-zinc-500 mt-2 block">Total acumulado</span>
                         </div>
-                        <div className="bg-[#141414] border border-zinc-800 rounded-xl p-6">
-                            <h3 className="text-zinc-400 font-medium mb-2">Leads Recebidos</h3>
-                            <p className="text-4xl font-black">0</p>
+                        <div className="bg-[#141414] border border-zinc-800 rounded-xl p-6 group hover:border-[#25D366] transition-colors">
+                            <h3 className="text-zinc-400 font-medium mb-2 flex items-center justify-between">
+                                Leads & Chamados
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-600 group-hover:text-[#25D366] transition-colors"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" /></svg>
+                            </h3>
+                            <p className="text-4xl font-black">{totalLeads || 0}</p>
+                            <span className="text-xs text-zinc-500 mt-2 block">Interesse em veículos</span>
                         </div>
                     </div>
 

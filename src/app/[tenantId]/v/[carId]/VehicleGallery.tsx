@@ -117,7 +117,7 @@ export default function VehicleGallery({ images, modelo }: VehicleGalleryProps) 
             {/* =========================================
                 VISÃO DESKTOP (Webmotors Style - 3 Fotos)
                ========================================= */}
-            <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-1 h-[400px] lg:h-[480px] w-full rounded-xl overflow-hidden relative bg-gray-100">
+            <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-1 h-[320px] lg:h-[380px] w-full md:rounded-xl overflow-hidden relative bg-gray-100">
                 {/* Imagem 1 (Principal/Esquerda) */}
                 <div
                     className="relative h-full w-full cursor-pointer overflow-hidden group/img bg-zinc-200"

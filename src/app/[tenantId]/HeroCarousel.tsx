@@ -26,7 +26,7 @@ export default function HeroCarousel({ lojaNome, corPrimaria, banners }: { lojaN
     const prevSlide = () => setCurrentIndex((prev) => (prev - 1 + images.length) % images.length)
 
     return (
-        <section className="relative w-full h-[60vh] min-h-[500px] flex items-center justify-center overflow-hidden border-b border-gray-200">
+        <section className="relative w-full h-[55vh] min-h-[420px] flex items-center justify-center overflow-hidden border-b border-gray-200">
             {/* Imagens de fundo */}
             {images.map((img, idx) => (
                 <div
@@ -46,8 +46,8 @@ export default function HeroCarousel({ lojaNome, corPrimaria, banners }: { lojaN
             <div className="absolute inset-0 bg-black/30 z-10" />
 
             {/* Conteúdo Tipográfico Massive */}
-            <div className="relative z-20 text-center px-4 max-w-5xl mx-auto flex flex-col items-center justify-center h-full pt-16">
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black mb-6 tracking-tighter leading-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
+            <div className="relative z-40 text-center px-4 max-w-5xl mx-auto flex flex-col items-center justify-center h-full pt-16">
+                <h1 className="text-4xl md:text-6xl lg:text-7xl font-black mb-6 tracking-tighter leading-none animate-in fade-in slide-in-from-bottom-8 duration-1000">
                     O INÍCIO DA SUA <br className="hidden md:block" />
                     <span style={{ color: "var(--color-brand)" }} className="relative inline-block">
                         NOVA JORNADA
@@ -90,7 +90,7 @@ export default function HeroCarousel({ lojaNome, corPrimaria, banners }: { lojaN
             </div>
 
             {/* Indicadores de Slide (Dots Customizados) */}
-            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex items-center gap-3 z-30">
+            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 z-20">
                 {images.map((_, idx) => (
                     <button
                         key={idx}

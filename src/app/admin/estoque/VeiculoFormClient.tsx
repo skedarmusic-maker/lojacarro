@@ -18,6 +18,8 @@ export default function VeiculoFormClient() {
     const [anoFab, setAnoFab] = useState('')
     const [anoMod, setAnoMod] = useState('')
     const [preco, setPreco] = useState('')
+    const [precoFipe, setPrecoFipe] = useState('')
+    const [personalizarPreco, setPersonalizarPreco] = useState(false)
     const [km, setKm] = useState('')
     const [cor, setCor] = useState('')
     const [combustivel, setCombustivel] = useState('')
@@ -67,6 +69,7 @@ export default function VeiculoFormClient() {
             setCilindradas(carro.cilindradas || '')
 
             if (carro.preco_fipe && carro.preco_fipe > 0) {
+                setPrecoFipe(carro.preco_fipe.toString())
                 setPreco(carro.preco_fipe.toString())
             }
         }
@@ -116,6 +119,8 @@ export default function VeiculoFormClient() {
             setAnoFab('')
             setAnoMod('')
             setPreco('')
+            setPrecoFipe('')
+            setPersonalizarPreco(false)
             setKm('')
             setCor('')
             setCombustivel('')
@@ -177,9 +182,45 @@ export default function VeiculoFormClient() {
                     <input required name="modelo" value={modelo} onChange={e => setModelo(e.target.value)} placeholder="Ex: Hilux SRX" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
                 </div>
 
-                <div className="space-y-1">
-                    <label className="text-xs font-medium text-zinc-400">Preço (R$)</label>
-                    <input required name="preco" value={preco} onChange={e => setPreco(e.target.value)} type="number" placeholder="250000" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-white" />
+                <div className="space-y-1 col-span-1 md:col-span-2 lg:col-span-1 border border-zinc-800 p-3 rounded-md bg-zinc-900/50">
+                    <label className="text-xs font-medium text-emerald-500 mb-1 flex items-center justify-between">
+                        Valor FIPE (R$)
+                        <label className="flex items-center gap-2 cursor-pointer">
+                            <input
+                                type="checkbox"
+                                checked={personalizarPreco}
+                                onChange={(e) => setPersonalizarPreco(e.target.checked)}
+                                className="rounded bg-zinc-800 border-zinc-700 text-emerald-500 max-w-4 max-h-4 focus:ring-emerald-500 focus:ring-offset-zinc-900"
+                            />
+                            <span className="text-[10px] text-zinc-400">Vender Abaixo/Acima</span>
+                        </label>
+                    </label>
+                    <input type="hidden" name="preco_fipe" value={precoFipe} />
+
+                    {!personalizarPreco ? (
+                        <input
+                            required
+                            name="preco"
+                            value={precoFipe || preco}
+                            readOnly
+                            className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-3 py-2 text-emerald-400 font-bold outline-none cursor-not-allowed"
+                        />
+                    ) : (
+                        <div className="flex gap-2 items-center mt-2 pt-2 border-t border-zinc-800">
+                            <div className="w-full">
+                                <label className="text-[10px] font-medium text-zinc-500 mb-1 block">Seu Preço (R$)</label>
+                                <input
+                                    required
+                                    name="preco"
+                                    value={preco}
+                                    onChange={e => setPreco(e.target.value)}
+                                    type="number"
+                                    placeholder="Ex: 85000"
+                                    className="w-full rounded-md border border-zinc-700 bg-zinc-800 px-3 py-2 text-white"
+                                />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 <div className="space-y-1 hidden lg:block"> {/* Spacer */} </div>
@@ -229,6 +270,7 @@ export default function VeiculoFormClient() {
                         <option value="Picapes">Picapes</option>
                         <option value="Sedans">Sedans</option>
                         <option value="SUVs">SUVs</option>
+                        <option value="Minivans">Minivans</option>
                         <option value="Outros">Outros</option>
                     </select>
                 </div>
