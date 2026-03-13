@@ -106,94 +106,72 @@ export async function fetchPlacaFipe(placa: string) {
     if (!placa) return { error: 'Placa não recebida' }
     
     const placaLimpa = placa.replace('-', '').toUpperCase();
-    console.log('[DEBUG-PLACA] Iniciando busca para:', placaLimpa);
+    const btok = process.env.APIBRASIL_TOKEN;
 
-    // 1. Prioridade MOCK (Respostas instantâneas para demonstração)
-    if (MOCK_DB[placaLimpa]) {
-        console.log('[DEBUG-PLACA] Encontrada no MOCK_DB');
-        const v = MOCK_DB[placaLimpa];
+    if (!btok) {
+        console.error('[ERROR] APIBRASIL_TOKEN não configurado no servidor Hostinger.');
+        return { error: 'O sistema de consulta automática não está configurado corretamente no servidor.' }
+    }
+
+    try {
+        const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${btok}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipo: 'fipe-chassi',
+                placa: placaLimpa,
+                homolog: false
+            }),
+            cache: 'no-store'
+        });
+
+        if (!res.ok) {
+            const errorText = await res.text();
+            console.error('[ERROR] Falha na APIBrasil:', res.status, errorText);
+            return { error: 'A API de placas está temporariamente indisponível. Por favor, preencha manualmente.' }
+        }
+
+        const result = await res.json();
+
+        if (result.error || !result.data?.resultados?.length) {
+            // Fallback se a API retornar erro de crédito ou placa não encontrada
+            return { error: result.message || 'Placa não encontrada na base nacional.' }
+        }
+
+        const d = result.data.resultados[0];
+        const modeloUpper = (d.modelo || '').toUpperCase();
+        
+        let cambio = '';
+        if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) cambio = 'Automático';
+        else if (modeloUpper.includes(' CVT ')) cambio = 'CVT';
+        else if (modeloUpper.includes(' MANUAL ')) cambio = 'Manual';
+
         return {
             data: {
-                marca: v.marca,
-                modelo: v.modelo,
-                anoFabricacao: v.ano,
-                anoModelo: v.anoModelo,
-                cor: v.cor || '',
-                combustivel: v.combustivel || '',
-                cambio: v.cambio || '',
-                chassi: v.chassi || '',
-                renavam: v.renavam || '',
-                placa: v.placa || '',
-                municipio: v.municipio || '',
-                uf: v.uf || '',
-                preco_fipe: v.preco_fipe || 0
+                marca: (d.marca || '').toUpperCase(),
+                modelo: modeloUpper,
+                anoFabricacao: d.anoFabricacao || '',
+                anoModelo: d.anoModelo || '',
+                cor: d.cor || '',
+                combustivel: (d.combustivel || '').toUpperCase(),
+                cambio: cambio,
+                chassi: d.chassi || '',
+                renavam: '',
+                placa: placaLimpa,
+                potencia: '',
+                cilindradas: (modeloUpper.match(/(\d\.\d)/) || [])[1] || '',
+                municipio: '',
+                uf: '',
+                preco_fipe: d.valor || 0
             }
         }
+    } catch (e: any) {
+        console.error('[CRITICAL ERROR] Erro ao buscar placa:', e.message);
+        return { error: 'Erro de conexão ao buscar dados da placa. Tente novamente ou preencha manual.' }
     }
-
-    // 2. Tentar API Real (Com timeout de segurança)
-    const btok = process.env.APIBRASIL_TOKEN;
-    if (btok) {
-        try {
-            console.log('[DEBUG-PLACA] Consultando API externa...');
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-            const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${btok}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    tipo: 'fipe-chassi',
-                    placa: placaLimpa,
-                    homolog: false
-                }),
-                signal: controller.signal
-            });
-
-            clearTimeout(timeoutId);
-            const result = await res.json();
-
-            if (!result.error && result.data?.resultados?.length > 0) {
-                console.log('[DEBUG-PLACA] Resultado API encontrado');
-                const d = result.data.resultados[0];
-                const modeloUpper = (d.modelo || '').toUpperCase();
-                
-                let cambio = '';
-                if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) cambio = 'Automático';
-                else if (modeloUpper.includes(' CVT ')) cambio = 'CVT';
-                else if (modeloUpper.includes(' MANUAL ')) cambio = 'Manual';
-
-                return {
-                    data: {
-                        marca: (d.marca || '').toUpperCase(),
-                        modelo: modeloUpper,
-                        anoFabricacao: d.anoFabricacao || '',
-                        anoModelo: d.anoModelo || '',
-                        cor: d.cor || '',
-                        combustivel: (d.combustivel || '').toUpperCase(),
-                        cambio: cambio,
-                        chassi: d.chassi || '',
-                        renavam: '',
-                        placa: placaLimpa,
-                        potencia: '',
-                        cilindradas: (modeloUpper.match(/(\d\.\d)/) || [])[1] || '',
-                        municipio: '',
-                        uf: '',
-                        preco_fipe: d.valor || 0
-                    }
-                }
-            }
-            console.log('[DEBUG-PLACA] API retornou sem resultados:', result.message);
-        } catch (e: any) {
-            console.error('[DEBUG-PLACA] Erro na API ou Timeout:', e.name === 'AbortError' ? 'Timeout' : e.message);
-        }
-    }
-
-    console.log('[DEBUG-PLACA] Falha em todas as fontes para:', placaLimpa);
-    return { error: 'Placa não identificada. Por favor, preencha os dados manualmente.' }
 }
 
 export async function submitNovoVeiculo(formData: FormData) {
