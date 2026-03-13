@@ -87,18 +87,30 @@ export async function submitDemoVeiculo(formData: FormData) {
 
 
     try {
-        // Encontrar a loja "Demo" principal. Vamos assumir que é a focus.earts
+        // Encontrar a loja "Demo" principal. 
+        // 1. Tentamos pelo slug exato ou pelo domínio da landing page
         let { data: currentLoja } = await supabase
             .from('perfis_lojas')
             .select('id, slug, custom_domain')
             .or('slug.eq.focus.earts,custom_domain.eq.silver-starling-801980.hostingersite.com')
             .limit(1)
-            .single()
+            .maybeSingle()
 
+        // 2. Se falhar, tentamos qualquer uma que comece com 'focus' (backup)
         if (!currentLoja) {
-            // Se nao achar, pega a primeira do banco só pra ter destino
-            const { data } = await supabase.from('perfis_lojas').select('id, slug, custom_domain').limit(1).single()
-            currentLoja = data
+            const { data: backup } = await supabase
+                .from('perfis_lojas')
+                .select('id, slug, custom_domain')
+                .ilike('slug', '%focus%')
+                .limit(1)
+                .maybeSingle()
+            currentLoja = backup
+        }
+
+        // 3. Fallback final: Pega a primeira loja disponível no banco
+        if (!currentLoja) {
+            const { data: first } = await supabase.from('perfis_lojas').select('id, slug, custom_domain').limit(1).maybeSingle()
+            currentLoja = first
         }
 
         if (!currentLoja) return { error: 'Nenhuma loja base configurada no sistema para direcionar o teste.' }
