@@ -63,7 +63,7 @@ export default function DemoPage() {
                         </div>
 
                         <a 
-                            href="https://silver-starling-801980.hostingersite.com"
+                            href="https://silver-starling-801980.hostingersite.com/v/focus.earts"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="shrink-0 bg-transparent border-2 border-emerald-600 text-emerald-500 hover:bg-emerald-600 hover:text-white px-6 py-3 rounded-lg font-bold transition-colors w-full md:w-auto text-center relative z-10"

@@ -13,11 +13,11 @@ export async function submitDemoVeiculo(formData: FormData) {
     const supabase = createClient(supabaseUrl, supabaseKey)
 
     try {
-        // Encontrar a loja "Demo" principal. Vamos assumir que é a silver-starling ou a primeira loja criada.
+        // Encontrar a loja "Demo" principal. Vamos assumir que é a focus.earts
         let { data: currentLoja } = await supabase
             .from('perfis_lojas')
             .select('id, slug, custom_domain')
-            .or('custom_domain.eq.silver-starling-801980.hostingersite.com,slug.ilike.%demo%')
+            .or('slug.eq.focus.earts,custom_domain.eq.silver-starling-801980.hostingersite.com')
             .limit(1)
             .single()
 
@@ -99,7 +99,7 @@ export async function submitDemoVeiculo(formData: FormData) {
         // Devolver a URL final da Loja/Veiculo pro front-end apontar o cliente
         const baseUrl = currentLoja.custom_domain 
             ? `https://${currentLoja.custom_domain}` 
-            : `/${currentLoja.slug}`
+            : `/v/${currentLoja.slug}`
 
         return { success: true, urlDestino: `${baseUrl}/v/${data.id}` }
         
