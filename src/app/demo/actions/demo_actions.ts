@@ -12,11 +12,16 @@ export async function fetchPlacaDemoAction(placa: string) {
     const placaLimpa = placa.replace('-', '').toUpperCase()
     const btok = process.env.APIBRASIL_TOKEN
 
+    console.log('[DEBUG-DEMO] Buscando placa:', placaLimpa, btok ? '(Token OK)' : '(Token Ausente!)')
+
     if (!btok) {
-        return { error: 'Token da API de consulta não configurado no servidor.' }
+        return { error: 'Token da API de consulta não configurado no servidor (APIBRASIL_TOKEN).' }
     }
 
     try {
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), 10000) // 10 segundos de timeout
+
         const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
             method: 'POST',
             headers: {
@@ -28,14 +33,20 @@ export async function fetchPlacaDemoAction(placa: string) {
                 placa: placaLimpa,
                 homolog: false
             }),
-            cache: 'no-store'
+            cache: 'no-store',
+            signal: controller.signal
         })
 
+        clearTimeout(timeoutId)
+
         if (!res.ok) {
-            return { error: 'A API de consulta está indisponível. Preencha os dados manualmente.' }
+            const errorText = await res.text()
+            console.error('[DEBUG-DEMO] Erro APIBrasil:', res.status, errorText)
+            return { error: 'A API de consulta está instável. Preencha os dados manualmente.' }
         }
 
         const result = await res.json()
+        console.log('[DEBUG-DEMO] Resultado da API:', result.error ? 'Erro: ' + result.message : 'Sucesso')
 
         if (result.error || !result.data?.resultados?.length) {
             return { error: result.message || 'Placa não encontrada na base nacional.' }
@@ -69,32 +80,41 @@ export async function fetchPlacaDemoAction(placa: string) {
             }
         }
     } catch (e: any) {
-        console.error('[Demo fetchPlaca] Erro:', e.message)
+        if (e.name === 'AbortError') {
+            console.error('[DEBUG-DEMO] Tempo limite esgotado na busca da placa.')
+            return { error: 'A busca demorou demais. O serviço da APIBrasil pode estar lento. Tente preencher manual.' }
+        }
+        console.error('[DEBUG-DEMO] Erro fatal:', e.message)
         return { error: 'Erro de conexão. Tente novamente ou preencha manualmente.' }
     }
 }
 
 
 export async function submitDemoVeiculo(formData: FormData) {
-    // Usamos o supabase-js puro aqui porque:
-    // 1. É uma rota pública, não queremos ler cookies de Auth.
-    // 2. Precisamos usar a SERVICE ROLE KEY (se existir) para by-passar o RLS
-    // e permitir que o visitante grave no banco do sistema principal.
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     
-    const supabase = createClient(supabaseUrl, supabaseKey)
+    console.log('[DEBUG-DEMO] Iniciando salvamento...', {
+        url: supabaseUrl,
+        keyType: process.env.SUPABASE_SERVICE_ROLE_KEY ? 'SERVICE_ROLE' : 'ANON'
+    })
 
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     try {
         // Encontrar a loja "Demo" principal. 
-        // 1. Tentamos pelo slug exato ou pelo domínio da landing page
-        let { data: currentLoja } = await supabase
+        let { data: currentLoja, error: storeError } = await supabase
             .from('perfis_lojas')
             .select('id, slug, custom_domain')
             .or('slug.eq.focus.earts,custom_domain.eq.silver-starling-801980.hostingersite.com')
             .limit(1)
             .maybeSingle()
+        
+        if (storeError) {
+            console.error('[DEBUG-DEMO] Erro ao buscar loja no Supabase:', storeError.message)
+            return { error: 'Erro de conexão com o banco de dados. Verifique as chaves do Supabase.' }
+        }
+
 
         // 2. Se falhar, tentamos qualquer uma que comece com 'focus' (backup)
         if (!currentLoja) {
