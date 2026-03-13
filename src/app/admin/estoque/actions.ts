@@ -104,14 +104,41 @@ const MOCK_DB: Record<string, any> = {
 
 export async function fetchPlacaFipe(placa: string) {
     if (!placa) return { error: 'Placa não recebida' }
+    
+    const placaLimpa = placa.replace('-', '').toUpperCase();
+    console.log('[DEBUG-PLACA] Iniciando busca para:', placaLimpa);
 
+    // 1. Prioridade MOCK (Respostas instantâneas para demonstração)
+    if (MOCK_DB[placaLimpa]) {
+        console.log('[DEBUG-PLACA] Encontrada no MOCK_DB');
+        const v = MOCK_DB[placaLimpa];
+        return {
+            data: {
+                marca: v.marca,
+                modelo: v.modelo,
+                anoFabricacao: v.ano,
+                anoModelo: v.anoModelo,
+                cor: v.cor || '',
+                combustivel: v.combustivel || '',
+                cambio: v.cambio || '',
+                chassi: v.chassi || '',
+                renavam: v.renavam || '',
+                placa: v.placa || '',
+                municipio: v.municipio || '',
+                uf: v.uf || '',
+                preco_fipe: v.preco_fipe || 0
+            }
+        }
+    }
+
+    // 2. Tentar API Real (Com timeout de segurança)
     const btok = process.env.APIBRASIL_TOKEN;
-    const dtok = process.env.APIBRASIL_DEVICE_TOKEN;
-
-    // Tentar API Real se o token estiver configurado
     if (btok) {
         try {
-            console.log('Consultando APIBrasil para placa:', placa.replace('-', '').toUpperCase());
+            console.log('[DEBUG-PLACA] Consultando API externa...');
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+
             const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
                 method: 'POST',
                 headers: {
@@ -120,99 +147,53 @@ export async function fetchPlacaFipe(placa: string) {
                 },
                 body: JSON.stringify({
                     tipo: 'fipe-chassi',
-                    placa: placa.replace('-', '').toUpperCase(),
+                    placa: placaLimpa,
                     homolog: false
-                })
+                }),
+                signal: controller.signal
             });
 
+            clearTimeout(timeoutId);
             const result = await res.json();
 
-            // Verificar se retornou sem erro e possui o array de resultados
-            if (!result.error && result.data && result.data.resultados && result.data.resultados.length > 0) {
-                // Pegar o primeiro resultado de fipe-chassi
+            if (!result.error && result.data?.resultados?.length > 0) {
+                console.log('[DEBUG-PLACA] Resultado API encontrado');
                 const d = result.data.resultados[0];
-
-                let marca = d.marca || '';
-                let modelo = d.modelo || '';
-
-                // Inferir câmbio a partir do texto do modelo (já que fipe-chassi puro costuma não ter campo isolado de câmbio)
-                let cambioExtraido = '';
-                const modeloUpper = modelo.toUpperCase();
-                if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) {
-                    cambioExtraido = 'Automático';
-                } else if (modeloUpper.includes(' CVT ')) {
-                    cambioExtraido = 'CVT';
-                } else if (modeloUpper.includes(' MANUAL ')) {
-                    cambioExtraido = 'Manual';
-                }
-
-                // Tentar extrair cilindradas direto do nome do modelo (ex: "Aurora LX 1.6 Flex")
-                let cilindradasFormatadas = '';
-                const ccMatch = modeloUpper.match(/(\d\.\d)/);
-                if (ccMatch && ccMatch[1]) {
-                    cilindradasFormatadas = ccMatch[1];
-                }
-
-                // Resgatar o combustível formatado se existir no campo extra
-                let combustivel = d.combustivel || '';
-                if (d.extra?.combustivel?.descricao) {
-                    combustivel = d.extra.combustivel.descricao;
-                }
+                const modeloUpper = (d.modelo || '').toUpperCase();
+                
+                let cambio = '';
+                if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) cambio = 'Automático';
+                else if (modeloUpper.includes(' CVT ')) cambio = 'CVT';
+                else if (modeloUpper.includes(' MANUAL ')) cambio = 'Manual';
 
                 return {
                     data: {
-                        marca: marca.toString().trim().toUpperCase(),
-                        modelo: modelo.toString().trim().toUpperCase(),
+                        marca: (d.marca || '').toUpperCase(),
+                        modelo: modeloUpper,
                         anoFabricacao: d.anoFabricacao || '',
                         anoModelo: d.anoModelo || '',
                         cor: d.cor || '',
-                        combustivel: combustivel.toUpperCase(),
-                        cambio: cambioExtraido,
+                        combustivel: (d.combustivel || '').toUpperCase(),
+                        cambio: cambio,
                         chassi: d.chassi || '',
                         renavam: '',
-                        placa: placa.toUpperCase(),
+                        placa: placaLimpa,
                         potencia: '',
-                        cilindradas: cilindradasFormatadas,
-                        municipio: '', // fipe-chassi geralmente não traz local
+                        cilindradas: (modeloUpper.match(/(\d\.\d)/) || [])[1] || '',
+                        municipio: '',
                         uf: '',
-                        preco_fipe: d.valor || 0 // esse endpoint traz o valor de mercado (FIPE)
+                        preco_fipe: d.valor || 0
                     }
                 }
             }
-
-            console.log('Aviso APIBrasil:', result.message || 'Sem retorno de dados');
-
-        } catch (e) {
-            console.error('Erro APIBrasil:', e);
+            console.log('[DEBUG-PLACA] API retornou sem resultados:', result.message);
+        } catch (e: any) {
+            console.error('[DEBUG-PLACA] Erro na API ou Timeout:', e.name === 'AbortError' ? 'Timeout' : e.message);
         }
     }
 
-    // FALLBACK PARA MOCK (Base de testes)
-    // Se a API real falhar ou não estiver disponível, usamos os dados de teste
-    const placaLimpa = placa.replace('-', '').toUpperCase();
-    const veiculoEncontrado = MOCK_DB[placaLimpa];
-
-    if (!veiculoEncontrado) {
-        return { error: 'Placa não encontrada na nossa base de testes provisória.' }
-    }
-
-    return {
-        data: {
-            marca: veiculoEncontrado.marca,
-            modelo: veiculoEncontrado.modelo,
-            anoFabricacao: veiculoEncontrado.ano,
-            anoModelo: veiculoEncontrado.anoModelo,
-            cor: veiculoEncontrado.cor || '',
-            combustivel: veiculoEncontrado.combustivel || '',
-            cambio: veiculoEncontrado.cambio || '',
-            chassi: veiculoEncontrado.chassi || '',
-            renavam: veiculoEncontrado.renavam || '',
-            placa: veiculoEncontrado.placa || '',
-            municipio: veiculoEncontrado.municipio || '',
-            uf: veiculoEncontrado.uf || '',
-            preco_fipe: veiculoEncontrado.preco_fipe || 0
-        }
-    }
+    console.log('[DEBUG-PLACA] Falha em todas as fontes para:', placaLimpa);
+    return { error: 'Placa não identificada. Por favor, preencha os dados manualmente.' }
 }
 
 export async function submitNovoVeiculo(formData: FormData) {
