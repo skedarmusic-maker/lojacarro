@@ -1,9 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { fetchPlacaFipe } from '../admin/estoque/actions'
+import { fetchPlacaDemoAction, submitDemoVeiculo } from './actions/demo_actions'
 import { compressImageToWebmotorsStandard } from '@/lib/imageCompressor'
-import { submitDemoVeiculo } from './actions/demo_actions'
 
 export default function DemoVeiculoFormClient() {
     const [loadingPlaca, setLoadingPlaca] = useState(false)
@@ -46,7 +45,7 @@ export default function DemoVeiculoFormClient() {
         }
 
         setLoadingPlaca(true)
-        const result = await fetchPlacaFipe(placaInput)
+        const result = await fetchPlacaDemoAction(placaInput)
 
         if (result?.error) {
             setPlacaError(result.error)

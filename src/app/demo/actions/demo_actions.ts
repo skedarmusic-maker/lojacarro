@@ -2,6 +2,79 @@
 
 import { createClient } from '@supabase/supabase-js'
 
+/**
+ * Ação de busca de placa para o painel de demonstração pública.
+ * Fica separada de /admin para não ser bloqueada pelo middleware de autenticação.
+ */
+export async function fetchPlacaDemoAction(placa: string) {
+    if (!placa) return { error: 'Placa não informada.' }
+
+    const placaLimpa = placa.replace('-', '').toUpperCase()
+    const btok = process.env.APIBRASIL_TOKEN
+
+    if (!btok) {
+        return { error: 'Token da API de consulta não configurado no servidor.' }
+    }
+
+    try {
+        const res = await fetch('https://gateway.apibrasil.io/api/v2/consulta/veiculos/credits', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${btok}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                tipo: 'fipe-chassi',
+                placa: placaLimpa,
+                homolog: false
+            }),
+            cache: 'no-store'
+        })
+
+        if (!res.ok) {
+            return { error: 'A API de consulta está indisponível. Preencha os dados manualmente.' }
+        }
+
+        const result = await res.json()
+
+        if (result.error || !result.data?.resultados?.length) {
+            return { error: result.message || 'Placa não encontrada na base nacional.' }
+        }
+
+        const d = result.data.resultados[0]
+        const modeloUpper = (d.modelo || '').toUpperCase()
+
+        let cambio = ''
+        if (modeloUpper.includes(' AUT') || modeloUpper.includes('AUTOMATICO')) cambio = 'Automático'
+        else if (modeloUpper.includes(' CVT ')) cambio = 'CVT'
+        else if (modeloUpper.includes(' MANUAL ')) cambio = 'Manual'
+
+        return {
+            data: {
+                marca: (d.marca || '').toUpperCase(),
+                modelo: modeloUpper,
+                anoFabricacao: d.anoFabricacao || '',
+                anoModelo: d.anoModelo || '',
+                cor: d.cor || '',
+                combustivel: (d.combustivel || '').toUpperCase(),
+                cambio,
+                chassi: d.chassi || '',
+                renavam: '',
+                placa: placaLimpa,
+                potencia: '',
+                cilindradas: (modeloUpper.match(/(\d\.\d)/) || [])[1] || '',
+                municipio: '',
+                uf: '',
+                preco_fipe: d.valor || 0
+            }
+        }
+    } catch (e: any) {
+        console.error('[Demo fetchPlaca] Erro:', e.message)
+        return { error: 'Erro de conexão. Tente novamente ou preencha manualmente.' }
+    }
+}
+
+
 export async function submitDemoVeiculo(formData: FormData) {
     // Usamos o supabase-js puro aqui porque:
     // 1. É uma rota pública, não queremos ler cookies de Auth.
@@ -11,6 +84,7 @@ export async function submitDemoVeiculo(formData: FormData) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     
     const supabase = createClient(supabaseUrl, supabaseKey)
+
 
     try {
         // Encontrar a loja "Demo" principal. Vamos assumir que é a focus.earts
