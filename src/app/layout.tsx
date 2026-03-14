@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-    title: "Plataforma Showroom",
-    description: "Gerador de sites automotivos",
+    title: "VITE | Plataforma SaaS Automotiva",
+    description: "Gerenciador inteligente de estoque de veículos online",
 };
 
 export default function RootLayout({

@@ -1,4 +1,5 @@
 import { headers } from 'next/headers'
+import Image from 'next/image'
 
 export default async function PlataformaHome() {
     const headersList = await headers()
@@ -6,9 +7,18 @@ export default async function PlataformaHome() {
 
     return (
         <div className="flex min-h-screen flex-col items-center justify-center bg-zinc-950 text-white p-4">
-            <h1 className="text-4xl font-bold mb-4">Plataforma Auto Showroom</h1>
+            <div className="mb-6">
+                <Image 
+                    src="/logo-vite.png" 
+                    alt="VITE Logo" 
+                    width={180} 
+                    height={45} 
+                    className="object-contain"
+                />
+            </div>
+            <h1 className="text-4xl font-bold mb-4 text-center">Gestão Inteligente de Estoque</h1>
             <p className="text-zinc-400 text-center max-w-lg mb-8">
-                Esta é a raiz da plataforma SaaS. Se você fosse um lojista, estaria logado aqui.
+                Bem-vindo ao <strong>VITE</strong>. Se você fosse um lojista e quisesse gerenciar o seu showroom, estaria logado aqui.
             </p>
 
             <div className="flex gap-4">

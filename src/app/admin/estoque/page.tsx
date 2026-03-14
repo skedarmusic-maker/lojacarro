@@ -92,8 +92,9 @@ export default async function EstoquePage({ searchParams }: Props) {
         <div className="min-h-screen bg-zinc-950 text-white font-sans flex text-sm">
             {/* Sidebar (Simplificada aqui para MVP, idealmente movida pro layout.tsx dps) */}
             <aside className="w-64 border-r border-zinc-800 bg-[#0f0f0f] hidden md:flex flex-col">
-                <div className="p-6 border-b border-zinc-800">
-                    <h2 className="font-bold text-lg">Menu Admin</h2>
+                <div className="p-6 border-b border-zinc-800 flex flex-col">
+                    <img src="/logo-vite.png" alt="VITE Logo" className="h-8 object-contain self-start mb-2" />
+                    <h2 className="font-bold text-lg text-zinc-300">Menu Admin</h2>
                 </div>
                 <nav className="flex-1 p-4 space-y-2">
                     <a href="/admin/dashboard" className="block px-4 py-2.5 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-md font-medium transition-colors"> Visão Geral </a>

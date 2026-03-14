@@ -1,4 +1,5 @@
 import { login, signup } from '../actions'
+import Image from 'next/image'
 
 type Props = {
     searchParams: Promise<{ message?: string }>
@@ -11,8 +12,18 @@ export default async function LoginPage({ searchParams }: Props) {
     return (
         <div className="flex h-screen items-center justify-center bg-zinc-950 text-white font-sans">
             <div className="w-full max-w-sm rounded-xl border border-zinc-800 bg-[#0f0f0f] p-8 shadow-2xl">
-                <div className="mb-8 text-center">
-                    <h1 className="text-2xl font-bold tracking-tight">Painel Lojista</h1>
+                <div className="mb-8 flex flex-col items-center text-center">
+                    <div className="mb-6 flex justify-center">
+                        <Image 
+                            src="/logo-vite.png" 
+                            alt="VITE Logo" 
+                            width={140} 
+                            height={35} 
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
+                    <h1 className="text-xl font-bold tracking-tight text-zinc-100">Portal do Lojista</h1>
                     <p className="text-sm text-zinc-400 mt-2">
                         Faça login para gerenciar o estoque da sua loja.
                     </p>

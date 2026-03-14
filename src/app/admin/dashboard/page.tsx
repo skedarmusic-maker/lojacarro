@@ -62,8 +62,9 @@ export default async function AdminDashboard() {
             {/* Sidebar Lateral (Mobile-first adaptável dps) */}
             <aside className="w-64 border-r border-zinc-800 bg-[#0f0f0f] hidden md:flex flex-col">
                 <div className="p-6 border-b border-zinc-800">
+                    <img src="/logo-vite.png" alt="VITE Logo" className="h-8 object-contain mb-4" />
                     <h2 className="font-bold text-lg">{loja?.nome || 'Carregando Loja...'}</h2>
-                    <p className="text-zinc-500 text-xs mt-1">Painel Administrativo</p>
+                    <p className="text-zinc-500 text-xs mt-1">Painel VITE</p>
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2">
