@@ -136,7 +136,7 @@ export default async function ConfigPage() {
             {/* Sidebar (Simplificada) */}
             <aside className="w-64 border-r border-zinc-800 bg-[#0f0f0f] hidden md:flex flex-col">
                 <div className="p-6 border-b border-zinc-800 flex flex-col">
-                    <img src="/logo-vite.png" alt="VITE Logo" className="h-8 object-contain self-start mb-2" />
+                    <img src="/logo-vite.png" alt="VITE Logo" className="w-40 object-contain self-start mb-6" />
                     <h2 className="font-bold text-lg text-zinc-300">Menu Admin</h2>
                 </div>
                 <nav className="flex-1 p-4 space-y-2">

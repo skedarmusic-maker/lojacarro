@@ -18,27 +18,13 @@ export default async function PlataformaHome() {
             </div>
             <h1 className="text-4xl font-bold mb-4 text-center">Gestão Inteligente de Estoque</h1>
             <p className="text-zinc-400 text-center max-w-lg mb-8">
-                Bem-vindo ao <strong>VITE</strong>. Se você fosse um lojista e quisesse gerenciar o seu showroom, estaria logado aqui.
+                Bem-vindo ao <strong>VITE</strong>. Faça login para gerenciar o seu showroom de veículos.
             </p>
 
             <div className="flex gap-4">
-                <a href="/admin/login" className="bg-emerald-600 hover:bg-emerald-700 px-6 py-2 rounded-md font-medium transition-colors">
+                <a href="/admin/login" className="bg-emerald-600 hover:bg-emerald-700 px-8 py-3 rounded-md font-medium transition-colors text-lg">
                     Entrar como Lojista
                 </a>
-            </div>
-
-            <div className="mt-12 p-6 bg-zinc-900 border border-zinc-800 rounded-lg max-w-xl w-full">
-                <h2 className="text-xl font-semibold mb-2">Simulação de Domínios (White-label)</h2>
-                <p className="text-zinc-400 text-sm mb-4">
-                    Para ver como o site de uma loja específica ficaria, altere a URL no seu navegador ou acesse:
-                </p>
-                <ul className="list-disc pl-5 text-zinc-300 space-y-2">
-                    <li><strong>http://marinhos.{host}</strong></li>
-                    <li><strong>http://supercarros.{host}</strong></li>
-                </ul>
-                <p className="text-xs text-zinc-500 mt-4">
-                    (Nota: Subdomínios em produção requerem configuração de DNS Wildcard na Hostinger/Vercel)
-                </p>
             </div>
         </div>
     );
