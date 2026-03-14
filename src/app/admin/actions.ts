@@ -54,3 +54,44 @@ export async function signup(formData: FormData) {
     revalidatePath('/admin/dashboard', 'layout')
     redirect('/admin/dashboard')
 }
+
+export async function updateAccountPassword(formData: FormData) {
+    const supabase = await createClient()
+    const password = formData.get('password') as string
+    const passwordConfirm = formData.get('passwordConfirm') as string
+
+    if (!password || password.length < 6) {
+        redirect('/admin/config?error=A senha deve ter pelo menos 6 caracteres')
+    }
+
+    if (password !== passwordConfirm) {
+        redirect('/admin/config?error=As senhas não conferem')
+    }
+
+    const { error } = await supabase.auth.updateUser({ password })
+
+    if (error) {
+        console.error("Update Password Error:", error)
+        redirect('/admin/config?error=Não foi possível atualizar a senha')
+    }
+
+    redirect('/admin/config?message=Senha atualizada com sucesso!')
+}
+
+export async function updateAccountEmail(formData: FormData) {
+    const supabase = await createClient()
+    const email = formData.get('email') as string
+
+    if (!email) {
+        redirect('/admin/config?error=O email é obrigatório')
+    }
+
+    const { error } = await supabase.auth.updateUser({ email })
+
+    if (error) {
+        console.error("Update Email Error:", error)
+        redirect('/admin/config?error=Não foi possível atualizar o email')
+    }
+
+    redirect('/admin/config?message=Verifique seu novo email para confirmar a alteração')
+}

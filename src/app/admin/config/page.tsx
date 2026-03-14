@@ -1,8 +1,17 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { headers } from 'next/headers'
+import { updateAccountPassword, updateAccountEmail } from '../actions'
 
-export default async function ConfigPage() {
+type ConfigPageProps = {
+    searchParams: Promise<{ message?: string; error?: string }>
+}
+
+export default async function ConfigPage({ searchParams }: ConfigPageProps) {
+    const params = await searchParams;
+    const message = params?.message;
+    const error = params?.error;
+
     const supabase = await createClient()
     const headersList = await headers()
     const host = headersList.get('host') || 'localhost:3000'
@@ -165,6 +174,18 @@ export default async function ConfigPage() {
                 </header>
 
                 <div className="p-8 max-w-3xl">
+                    {message && (
+                        <div className="mb-6 bg-emerald-900/20 border border-emerald-900/50 text-emerald-400 p-4 rounded-lg text-sm flex items-center gap-2">
+                            <span className="text-lg">✓</span> {message}
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="mb-6 bg-red-900/20 border border-red-900/50 text-red-400 p-4 rounded-lg text-sm flex items-center gap-2">
+                            <span className="text-lg">⚠</span> {error}
+                        </div>
+                    )}
+
                     <div className="bg-[#141414] border border-zinc-800 rounded-xl p-8 mb-12">
                         <h2 className="text-lg font-bold mb-6 border-b border-zinc-800 pb-2">Identidade e Domínio (White-Label)</h2>
 
@@ -371,10 +392,56 @@ export default async function ConfigPage() {
 
                             <div className="pt-6">
                                 <button className="bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-8 py-3 rounded-md transition-colors w-full sm:w-auto">
-                                    Salvar Configurações
+                                    Salvar Configurações da Loja
                                 </button>
                             </div>
                         </form>
+                    </div>
+
+                    {/* SEÇÃO DE SEGURANÇA */}
+                    <div className="bg-[#141414] border border-zinc-800 rounded-xl p-8 mb-12">
+                        <h2 className="text-lg font-bold mb-6 border-b border-zinc-800 pb-2">Segurança do Acesso</h2>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            {/* Trocar E-mail */}
+                            <div>
+                                <h3 className="text-md font-medium text-zinc-200 mb-4">Alterar E-mail de Login</h3>
+                                <form action={updateAccountEmail} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs text-zinc-400 uppercase tracking-wider">E-mail Atual</label>
+                                        <div className="bg-zinc-800 text-zinc-500 px-4 py-2.5 rounded-md text-sm border border-zinc-700/50 italic">
+                                            {user?.email}
+                                        </div>
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Novo E-mail</label>
+                                        <input required name="email" type="email" placeholder="novo.email@empresa.com" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-sm" />
+                                    </div>
+                                    <button className="bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 text-white text-xs font-bold py-2 px-4 rounded transition-colors uppercase">
+                                        Atualizar E-mail
+                                    </button>
+                                </form>
+                                <p className="text-[10px] text-zinc-500 mt-2">Você precisará confirmar a troca nos dois e-mails.</p>
+                            </div>
+
+                            {/* Trocar Senha */}
+                            <div>
+                                <h3 className="text-md font-medium text-zinc-200 mb-4">Alterar Senha</h3>
+                                <form action={updateAccountPassword} className="space-y-4">
+                                    <div className="space-y-2">
+                                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Nova Senha</label>
+                                        <input required name="password" type="password" placeholder="••••••••" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-sm" />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-xs text-zinc-400 uppercase tracking-wider">Confirmar Nova Senha</label>
+                                        <input required name="passwordConfirm" type="password" placeholder="••••••••" className="w-full rounded-md border border-zinc-800 bg-zinc-900 px-4 py-2.5 text-white text-sm" />
+                                    </div>
+                                    <button className="bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-600/50 text-emerald-400 text-xs font-bold py-2 px-4 rounded transition-colors uppercase">
+                                        Alterar Senha
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </main>

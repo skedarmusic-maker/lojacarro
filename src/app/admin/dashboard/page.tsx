@@ -173,66 +173,6 @@ export default async function AdminDashboard() {
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></svg>
                             </a>
                         </div>
-
-                        <div className="space-y-4">
-                            {loja?.custom_domain && (
-                                <a
-                                    href={`https://${loja.custom_domain}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-4 bg-purple-950/20 border border-purple-900/30 rounded-lg block hover:bg-purple-950/30 transition-all group"
-                                >
-                                    <span className="text-[10px] text-purple-400 font-black uppercase tracking-widest block mb-1">Domínio Oficial (Clique para testar)</span>
-                                    <div className="flex items-center justify-between gap-2">
-                                        <code className="text-purple-300 font-mono text-sm underline decoration-purple-500/30">https://{loja.custom_domain}</code>
-                                        <div className="flex items-center gap-2">
-                                            <span className="bg-purple-500/20 text-purple-400 text-[9px] px-2 py-0.5 rounded">DNS CONFIGURADO</span>
-                                            <svg className="text-purple-400 w-4 h-4 group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="7" y1="17" x2="17" y2="7" /><polyline points="7 7 17 7 17 17" /></svg>
-                                        </div>
-                                    </div>
-                                </a>
-                            )}
-
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                <a
-                                    href={host.includes('localhost')
-                                        ? `http://localhost:3000/v/${loja?.slug}`
-                                        : `https://${host}/v/${loja?.slug}`
-                                    }
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg hover:bg-zinc-800/50 transition-all group"
-                                >
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link de Backup (Clique para Abrir)</span>
-                                    <code className="text-blue-400 font-mono text-xs break-all block mb-2 group-hover:underline">
-                                        {host.includes('localhost')
-                                            ? `http://localhost:3000/v/${loja?.slug}`
-                                            : `https://${host}/v/${loja?.slug}`
-                                        }
-                                    </code>
-                                    <p className="text-[10px] text-zinc-500 italic">Use este se o seu domínio oficial ainda estiver fora do ar.</p>
-                                </a>
-
-                                <a
-                                    href={host.includes('localhost')
-                                        ? `http://${loja?.slug}.localhost:3000`
-                                        : `https://${loja?.slug}.${host}`
-                                    }
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="p-4 bg-zinc-800/30 border border-zinc-800 rounded-lg opacity-60 hover:opacity-100 transition-all group"
-                                >
-                                    <span className="text-[10px] text-zinc-500 font-bold uppercase tracking-widest block mb-2">Link Subdomínio (Teste)</span>
-                                    <code className="text-emerald-500 font-mono text-xs break-all block mb-2 group-hover:underline">
-                                        {host.includes('localhost')
-                                            ? `http://${loja?.slug}.localhost:3000`
-                                            : `https://${loja?.slug}.${host}`
-                                        }
-                                    </code>
-                                    <p className="text-[10px] text-yellow-500/70">⚠️ Depende de configuração Wildcard no seu servidor.</p>
-                                </a>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </main>
